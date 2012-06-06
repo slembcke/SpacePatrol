@@ -60,7 +60,7 @@ void main()
 	lowp vec3 terrain_color = texture2D(terrain_texture, frag_texcoord).rgb;
 	color = mix(color, terrain_color, step(THRESHOLD, base));
 	
-	lowp float crust = mix(0.5, texture2D(crust_texture, frag_texcoord).a, 0.6);
+	lowp float crust = mix(0.5, texture2D(crust_texture, frag_texcoord).a, 0.20);
 	color = mix(color, crust_color, 1.0 - step_aa(0.15, abs(crust - base)));
 	
 	gl_FragColor = vec4(color, 1.0);

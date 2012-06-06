@@ -94,7 +94,7 @@ enum Z_ORDER {
 		ChipmunkShape *shape = [space add:[ChipmunkCircleShape circleWithBody:body radius:radius offset:cpvzero]];
 		shape.friction = 1.0;
 		
-//		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
+		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
 		
 		// Add a ChipmunkDebugNode to draw the space.
 		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
