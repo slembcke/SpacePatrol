@@ -29,7 +29,8 @@
 
 typedef struct Vertex {
 	GLfloat vertex[2];
-	GLfloat texcoord0[2];
+	GLfloat base_texcoord[2];
+	GLfloat crust_texcoord[2];
 } Vertex;
 
 
@@ -43,10 +44,12 @@ typedef struct Vertex {
 	
 	HMVectorNode *_debugNode;
 	
-	CCTexture2D *_texture;
+	CCTexture2D *_samplerTexture;
+	CCTexture2D *_terrainTexture;
+	CCTexture2D *_crustTexture;
 	GLuint _vao, _vbo;
 	
-	CGImageRef hole;
+	CGImageRef _hole;
 }
 
 @synthesize texelSize = _texelScale;
@@ -55,7 +58,7 @@ typedef struct Vertex {
 
 -(void)dealloc
 {
-	CGImageRelease(hole);
+	CGImageRelease(_hole);
 	
 	glDeleteVertexArraysOES(1, &_vao);
 	glDeleteBuffers(1, &_vbo);
@@ -63,68 +66,100 @@ typedef struct Vertex {
 
 -(id)initWithSpace:(ChipmunkSpace *)space texelScale:(cpFloat)texelScale tileSize:(int)tileSize;
 {
-	NSURL *url = [[NSBundle mainBundle] URLForResource:@"Terrain" withExtension:@"png"];
-	ChipmunkImageSampler *sampler = [ChipmunkImageSampler samplerWithImageFile:url isMask:TRUE];
-	
-	hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];
-	
-	[sampler setBorderValue:1.0];
-	
-	sampler.outputRect = cpBBNew(0.5*texelScale, 0.5*texelScale, (sampler.width - 0.5)*texelScale, (sampler.height - 0.5)*texelScale);
-	
-	_texture = [[CCTexture2D alloc]
-		initWithData:sampler.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
-		pixelsWide:sampler.width pixelsHigh:sampler.height
-		contentSize:CGSizeMake(sampler.width, sampler.height)
-	];
-	
 	if((self = [super init])){
 		_texelScale = texelScale;
-		self.sampler = sampler;
-		CGContextConcatCTM(sampler.context, CGAffineTransformMake(1.0/_texelScale, 0.0, 0.0, 1.0/_texelScale, 0.0, 0.0));
 		
+		NSURL *url = [[NSBundle mainBundle] URLForResource:@"Terrain" withExtension:@"png"];
+		_sampler = [ChipmunkImageSampler samplerWithImageFile:url isMask:TRUE];
+		[_sampler setBorderValue:1.0];
+		
+		CGContextConcatCTM(_sampler.context, CGAffineTransformMake(1.0/_texelScale, 0.0, 0.0, 1.0/_texelScale, 0.0, 0.0));
+		_sampler.outputRect = cpBBNew(0.5*texelScale, 0.5*texelScale, (_sampler.width - 0.5)*texelScale, (_sampler.height - 0.5)*texelScale);
 		
 		_tileSize = tileSize;
-		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:sampler space:space tileSize:_tileSize*_texelScale samplesPerTile:_tileSize + 1 cacheSize:256];
+		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:_tileSize*_texelScale samplesPerTile:_tileSize + 1 cacheSize:256];
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);
 		_tiles.segmentRadius = 2;
 		_tiles.simplifyThreshold = 2;
 		
+		
+		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];;
+		
+		
+		_samplerTexture = [[CCTexture2D alloc]
+			initWithData:_sampler.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
+			pixelsWide:_sampler.width pixelsHigh:_sampler.height
+			contentSize:CGSizeMake(_sampler.width, _sampler.height)
+		];
+		
+		_crustTexture = [[CCTextureCache sharedTextureCache] addImage:@"Crust.png"];
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		
+		_terrainTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainDetail.png"];
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		
+		// I was too lazy to load an alpha texture the hard way... So I just made a sampler which handled that.
+//		ChipmunkImageSampler *crust = [ChipmunkImageSampler samplerWithImageFile:[[NSBundle mainBundle] URLForResource:@"Crust" withExtension:@"png"] isMask:TRUE];
+//		_crustTexture = [[CCTexture2D alloc]
+//			initWithData:crust.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
+//			pixelsWide:crust.width pixelsHigh:crust.height
+//			contentSize:CGSizeMake(crust.width, crust.height)
+//		];
+//		
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 		CCGLProgram *shader = [[CCGLProgram alloc]
 			initWithVertexShaderFilename:@"DeformableTerrain.vsh"
 			fragmentShaderFilename:@"DeformableTerrain.fsh"
 		];
 		
-		[shader addAttribute:@"position" index:kCCVertexAttrib_Position];
-		[shader addAttribute:@"texcoord0" index:kCCVertexAttrib_TexCoords];
+		[shader addAttribute:@"position" index:0];
+		[shader addAttribute:@"sampler_texcoord" index:1];
+		[shader addAttribute:@"texcoord" index:2];
 		
 		[shader link];
 		[shader updateUniforms];
 		self.shaderProgram = shader;
 		
+		glUniform3f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0);
+		
+		glUniform1i(glGetUniformLocation(shader->program_, "sampler_texture"), 0);
+		glUniform1i(glGetUniformLocation(shader->program_, "terrain_texture"), 1);
+		glUniform1i(glGetUniformLocation(shader->program_, "crust_texture"), 2);
+		
 		
     glGenVertexArraysOES(1, &_vao);
     glBindVertexArrayOES(_vao);
 		
-		GLfloat w = _texelScale*sampler.width;
-		GLfloat h = _texelScale*sampler.height;
+		GLfloat sw = _texelScale*_sampler.width;
+		GLfloat sh = _texelScale*_sampler.height;
+		
+		GLfloat tw = sw/_terrainTexture.contentSize.width;
+		GLfloat th = sh/_terrainTexture.contentSize.height;
+		
 		Vertex quad[] = {
-			{{0, 0}, {0, 1}},
-			{{w, 0}, {1, 1}},
-			{{w, h}, {1, 0}},
-			{{0, h}, {0, 0}},
+			{{ 0,  0}, {0, 1}, { 0, th}},
+			{{sw,  0}, {1, 1}, {tw, th}},
+			{{sw, sh}, {1, 0}, {tw,  0}},
+			{{ 0, sh}, {0, 0}, { 0,  0}},
 		};
 		
 		glGenBuffers(1, &_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		glBufferData(GL_ARRAY_BUFFER, 4*sizeof(Vertex), quad, GL_STATIC_DRAW);
 		
-		glEnableVertexAttribArray(kCCVertexAttrib_Position);
-		glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 		
-    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, vertex));
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, vertex));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, base_texcoord));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, crust_texcoord));
 		
     glBindVertexArrayOES(0);
 		
@@ -150,9 +185,15 @@ typedef struct Vertex {
 -(void)draw
 {
 	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ccGLBindTexture2D(_samplerTexture.name);
 	
-	// Will need to be *EXTREMELY* careful with texture states when moving to multi-texturing
-	ccGLBindTexture2D(_texture.name);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, _terrainTexture.name);
+	
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, _crustTexture.name);
+	
+	glActiveTexture(GL_TEXTURE0);
 	
 	CCGLProgram *shader = self.shaderProgram;
 	[shader use];
@@ -187,7 +228,7 @@ Clamp(int i, int min, int max)
 //	CGContextSetGrayFillColor(ctx, 0.0, 1.0);
 //	CGContextFillEllipseInRect(ctx, rect);
 	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
-	CGContextDrawImage(ctx, rect, hole);
+	CGContextDrawImage(ctx, rect, _hole);
 	
 	[self.tiles markDirtyRect:cpBBFromCGRect(rect)];
 	
@@ -202,7 +243,7 @@ Clamp(int i, int min, int max)
 	int h = Clamp(bb.t, 0, sh) - y;
 	
 	// x is rounded down by 4 and w is rounded up by 4
-	// This ensures the final width is always a multiple of 4
+	// This ensures the final width is always a multiple of 4 bytes
 	// This makes glTexSubImage2D() happy.
 	
 	int stride = CGBitmapContextGetBytesPerRow(ctx);
@@ -211,7 +252,7 @@ Clamp(int i, int min, int max)
 	GLubyte *dirtyPixels = alloca(w*h);
 	for(int i=0; i<h; i++) memcpy(dirtyPixels + i*w, pixels + (i + y)*stride + x, w);
 	
-	glBindTexture(GL_TEXTURE_2D, _texture.name);
+	glBindTexture(GL_TEXTURE_2D, _samplerTexture.name);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_ALPHA, GL_UNSIGNED_BYTE, dirtyPixels);
 	
 //	PRINT_GL_ERRORS();

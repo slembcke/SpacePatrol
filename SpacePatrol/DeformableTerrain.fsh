@@ -24,18 +24,36 @@
 // Enabling AA of the terrain will probably cut the framerate in half on an iPhone 4
 #define ENABLE_AA 0
 
-varying mediump vec2 frag_texcoord0;
+varying mediump vec2 frag_sampler_texcoord;
+varying mediump vec2 frag_texcoord;
 
-uniform mediump vec4 color;
-uniform sampler2D texture0;
+uniform lowp vec3 sky_color;
+
+uniform sampler2D sampler_texture;
+uniform sampler2D terrain_texture;
+uniform sampler2D crust_texture;
+
+highp float step_aa(highp float threshold, highp float alpha)
+{
+#if defined GL_OES_standard_derivatives && ENABLE_AA
+	highp float aa = 0.5*fwidth(alpha);
+	return smoothstep(threshold - aa, threshold + aa, alpha);
+#else
+	return step(threshold, alpha);
+#endif
+}
+
+const highp float THRESHOLD = 0.5;
 
 void main()
 {
-	highp float alpha = texture2D(texture0, frag_texcoord0).a;
-#if defined GL_OES_standard_derivatives && ENABLE_AA
-	highp float foo = 0.5*fwidth(alpha);
-	gl_FragColor = vec4(color.rgb, smoothstep(0.5 - foo, 0.5 + foo, alpha));
-#else
-	gl_FragColor = vec4(color.rgb, step(0.5, alpha));
-#endif
+	gl_FragColor = vec4(sky_color, 1.0);
+	
+	highp float base = texture2D(sampler_texture, frag_sampler_texcoord).a;
+	highp vec4 terrain_color = texture2D(terrain_texture, frag_texcoord);
+	gl_FragColor = mix(gl_FragColor, terrain_color, step(THRESHOLD, base));
+	
+	highp vec4 crust_color = texture2D(crust_texture, frag_texcoord);
+	highp float crust = base + 0.1*(2.0*crust_color.a - 1.0);
+	gl_FragColor = mix(gl_FragColor, vec4(crust_color.rgb, 1.0), 1.0 - step(0.20, abs(crust - 0.5)));
 }

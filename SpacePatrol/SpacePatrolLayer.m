@@ -35,7 +35,6 @@ static const ccColor4B SKY_COLOR = {30, 66, 78, 255};
 
 
 enum Z_ORDER {
-	Z_SKY,
 	Z_WORLD,
 	Z_TERRAIN,
 	Z_CRATES,
@@ -61,7 +60,6 @@ enum Z_ORDER {
 	ChipmunkDebugNode *debugNode;
 	
 	CCNode *world;
-	CCLayerColor *skyLayer;
 	DeformableTerrainSprite *terrain;
 	
 	ChipmunkBody *body;
@@ -85,10 +83,6 @@ enum Z_ORDER {
 		space = [[ChipmunkSpace alloc] init];
 		space.gravity = cpv(0.0f, -400.0f);
 		
-		// Color layer for the sky
-		skyLayer = [CCLayerColor layerWithColor:SKY_COLOR];
-		[self addChild:skyLayer z:Z_SKY];
-		
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:4.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
 		
@@ -100,12 +94,12 @@ enum Z_ORDER {
 		ChipmunkShape *shape = [space add:[ChipmunkCircleShape circleWithBody:body radius:radius offset:cpvzero]];
 		shape.friction = 1.0;
 		
-		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
+//		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
 		
 		// Add a ChipmunkDebugNode to draw the space.
 		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
 		[world addChild:debugNode z:Z_DEBUG];
-		debugNode.visible = TRUE;
+		debugNode.visible = FALSE;
 		
 		// Show some menu buttons.
 		CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){

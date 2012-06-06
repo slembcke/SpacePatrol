@@ -22,15 +22,18 @@
 uniform mediump mat4 projection;
 
 attribute mediump vec2 position;
-attribute mediump vec2 texcoord0;
+attribute mediump vec2 sampler_texcoord;
+attribute mediump vec2 texcoord;
 
-varying mediump vec2 frag_texcoord0;
+varying mediump vec2 frag_sampler_texcoord;
+varying mediump vec2 frag_texcoord;
 
 uniform mat4 u_MVPMatrix;
 
 void main()
 {
-	frag_texcoord0 = texcoord0;
+	frag_sampler_texcoord = sampler_texcoord;
+	frag_texcoord = texcoord;
 	
 	gl_Position = u_MVPMatrix*vec4(position, 0, 1);
 }
