@@ -83,7 +83,7 @@ enum Z_ORDER {
 		space = [[ChipmunkSpace alloc] init];
 		space.gravity = cpv(0.0f, -400.0f);
 		
-		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:4.0 tileSize:32];
+		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:8.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
 		
 		cpFloat mass = 1.0;

@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */; };
-		D351A416157FFF5900F74BF1 /* TerrainDetail.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A415157FFF5900F74BF1 /* TerrainDetail.psd */; };
-		D351A418157FFFCE00F74BF1 /* Crust.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A417157FFFCE00F74BF1 /* Crust.psd */; };
+		D351A41C1580112900F74BF1 /* Crust.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A4191580112900F74BF1 /* Crust.png */; };
+		D351A41D1580112900F74BF1 /* TerrainDetail-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */; };
+		D351A41E1580112900F74BF1 /* TerrainDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A41B1580112900F74BF1 /* TerrainDetail.png */; };
 		D37893EB15769BCD006CBEE8 /* libChipmunkPro-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893E915769BCD006CBEE8 /* libChipmunkPro-iPhone.a */; };
 		D37893ED15769BFD006CBEE8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893EC15769BFD006CBEE8 /* ImageIO.framework */; };
 		D38FE0CF157967D000E47812 /* libarclite_iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D38FE0CE157967D000E47812 /* libarclite_iphoneos.a */; };
@@ -190,8 +191,9 @@
 /* Begin PBXFileReference section */
 		D33F53B0157FB95A00DD9246 /* SpacePatrolLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacePatrolLayer.h; sourceTree = "<group>"; };
 		D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpacePatrolLayer.m; sourceTree = "<group>"; };
-		D351A415157FFF5900F74BF1 /* TerrainDetail.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TerrainDetail.psd; sourceTree = "<group>"; };
-		D351A417157FFFCE00F74BF1 /* Crust.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Crust.psd; sourceTree = "<group>"; };
+		D351A4191580112900F74BF1 /* Crust.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Crust.png; sourceTree = "<group>"; };
+		D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TerrainDetail-hd.png"; sourceTree = "<group>"; };
+		D351A41B1580112900F74BF1 /* TerrainDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TerrainDetail.png; sourceTree = "<group>"; };
 		D37893C015769BCD006CBEE8 /* chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk.h; sourceTree = "<group>"; };
 		D37893C115769BCD006CBEE8 /* chipmunk_ffi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk_ffi.h; sourceTree = "<group>"; };
 		D37893C215769BCD006CBEE8 /* chipmunk_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk_private.h; sourceTree = "<group>"; };
@@ -661,8 +663,9 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				D351A417157FFFCE00F74BF1 /* Crust.psd */,
-				D351A415157FFF5900F74BF1 /* TerrainDetail.psd */,
+				D351A4191580112900F74BF1 /* Crust.png */,
+				D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */,
+				D351A41B1580112900F74BF1 /* TerrainDetail.png */,
 				D38FE0F6157FB3EE00E47812 /* Hole.png */,
 				D3F8E003157D755000457513 /* Terrain.png */,
 			);
@@ -1272,8 +1275,9 @@
 				D3AAFD30156F22E100C67169 /* ChangeLog in Resources */,
 				D3F8E004157D755000457513 /* Terrain.png in Resources */,
 				D38FE0F7157FB3EE00E47812 /* Hole.png in Resources */,
-				D351A416157FFF5900F74BF1 /* TerrainDetail.psd in Resources */,
-				D351A418157FFFCE00F74BF1 /* Crust.psd in Resources */,
+				D351A41C1580112900F74BF1 /* Crust.png in Resources */,
+				D351A41D1580112900F74BF1 /* TerrainDetail-hd.png in Resources */,
+				D351A41E1580112900F74BF1 /* TerrainDetail.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

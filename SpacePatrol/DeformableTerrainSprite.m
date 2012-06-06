@@ -92,26 +92,21 @@ typedef struct Vertex {
 			contentSize:CGSizeMake(_sampler.width, _sampler.height)
 		];
 		
-		_crustTexture = [[CCTextureCache sharedTextureCache] addImage:@"Crust.png"];
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		
 		_terrainTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainDetail.png"];
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
-		// I was too lazy to load an alpha texture the hard way... So I just made a sampler which handled that.
-//		ChipmunkImageSampler *crust = [ChipmunkImageSampler samplerWithImageFile:[[NSBundle mainBundle] URLForResource:@"Crust" withExtension:@"png"] isMask:TRUE];
-//		_crustTexture = [[CCTexture2D alloc]
-//			initWithData:crust.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
-//			pixelsWide:crust.width pixelsHigh:crust.height
-//			contentSize:CGSizeMake(crust.width, crust.height)
-//		];
-//		
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// I was too lazy to load an alpha texture the hard way... So I just made a sampler which did it for me.
+		ChipmunkImageSampler *crust = [ChipmunkImageSampler samplerWithImageFile:[[NSBundle mainBundle] URLForResource:@"Crust" withExtension:@"png"] isMask:TRUE];
+		_crustTexture = [[CCTexture2D alloc]
+			initWithData:crust.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
+			pixelsWide:crust.width pixelsHigh:crust.height
+			contentSize:CGSizeMake(crust.width, crust.height)
+		];
+		
+//		_crustTexture = [[CCTextureCache sharedTextureCache] addImage:@"Crust.png"];
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 		CCGLProgram *shader = [[CCGLProgram alloc]
 			initWithVertexShaderFilename:@"DeformableTerrain.vsh"
@@ -127,6 +122,7 @@ typedef struct Vertex {
 		self.shaderProgram = shader;
 		
 		glUniform3f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0);
+		glUniform3f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0);
 		
 		glUniform1i(glGetUniformLocation(shader->program_, "sampler_texture"), 0);
 		glUniform1i(glGetUniformLocation(shader->program_, "terrain_texture"), 1);
