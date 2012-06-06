@@ -1,0 +1,60 @@
+#! /usr/bin/env ruby
+
+# Path to the imageconvert utility.
+IMAGECONVERT = File.join(File.dirname(__FILE__), "imageconvert")
+
+def system(str)
+	puts str
+	Kernel.system str
+end
+
+def process(filename, outputname, tag, fmt)
+	system "#{IMAGECONVERT} 1.0 #{filename} #{outputname}#{tag}.#{fmt}"
+	system "#{IMAGECONVERT} 0.5 #{filename} #{outputname}.#{fmt}"
+end
+
+require 'optparse'
+
+rest = OptionParser.new do|opts|
+	opts.banner = "Usage: retinapng [--tag <tag>] [--fmt <format>] [--dir <directory>] <filenames>"
+	
+	tag = "@2x"
+	opts.on("-t", "--tag TAG", String,
+		"Retina image tag. (defaults to '@2x')"
+	) do|val|
+		tag = val
+	end
+	
+	dir = nil
+	opts.on("-d", "--dir [OUTPUT]", String,
+		"Output directory. Defaults to the directory containing the original image."
+	) do|val|
+		dir = val
+	end
+	
+	fmt = "png"
+	opts.on("-f", "--fmt [FORMAT]", String,
+		"Output format file extension. (defaults to 'png')"
+	) do|val|
+		fmt = val
+	end
+	
+	opts.on_tail("-h", "--help", "Show this message") do
+		puts opts
+		exit
+	end
+	
+	filenames = opts.parse(ARGV)
+	if(filenames.empty?)
+		puts "No files to process specified."
+		puts
+		puts opts
+		
+		exit
+	else
+		filenames.each do|filename|
+			outputname = File.join(dir || File.dirname(filename), File.basename(filename, File.extname(filename)))
+			process(filename, outputname, tag, fmt)
+		end
+	end
+end

@@ -1,0 +1,30 @@
+TODO replace image and video
+p=. !http://files.slembcke.net/upshot/upshot_CloudBomber.png!
+
+"YouTube Video":http://www.youtube.com/watch?v=bAEBqjc8xwU
+
+h1. SpacePatrol
+
+TODO goofy description
+
+h2. Overview:
+
+This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how simple it can be to mix Chipmunk Pro's autogeometry to implement deformable terrain with Cocos2D. It implements a single screen game that uses the same Cocos2D rendering code that renders the screen to generate the Chipmunk geometry. While very simple and easy, transfering pixels from the GPU to the CPU is a little slow. Performance is not a major focus of this demo over simplicity. However, the cost of regenerating all the geometry only takes a couple dozen milliseconds. This method would work perfect for generating static level geometry at runtime or an occasional terrain deformation such as in a Scorched Earth clone.
+
+This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how to do large scale, high performance terrain using CGBitmapContexts and rendering it with GLES 2.0 and Cocos2D 2.0. The terrain is backed by a huge 2048x512 bitmap upsampled to a 8192x2048 world. While more complicated than the CloudBomber project, the performance is much better.
+
+h2. How it works:
+
+Chipmunk Pro allows you to trace images (or procedural functions) to turn them into geometry. For Objective-C, it comes with a few handy wrapper classes that make this easy to do.
+
+TODO finish
+
+h2. What's included:
+
+A number of handy utility classes you can use in your own code:
+* ChipmunkSprite: Automatically synchronize Chipmunk bodies to Cocos2D sprites.
+* ChipmunkDebugNode: An simple node for rendering Chipmunk collision shapes and constraints.
+* HMVectorNode: A node that provides immediate mode rendering of high quality, anti-aliased primitives. ChipmunkDebugNode is built on top of it.
+* imageconvert/retinaconvert: Utility programs I've made and use that allow you to generate .png files from Photoshop source files without needing to re-export them by hand every time you build.
+
+TODO finish
