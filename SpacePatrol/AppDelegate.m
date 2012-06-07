@@ -67,7 +67,7 @@
 	//	[director setProjection:kCCDirectorProjection3D];
 	
 	// Enables High Res mode (Retina Display) on iPhone 4 and maintains low res on all other devices
-	if( ! [director_ enableRetinaDisplay:FALSE] )
+	if( ! [director_ enableRetinaDisplay:TRUE] )
 		CCLOG(@"Retina Display Not supported");
 	
 	// Create a Navigation Controller with the Director

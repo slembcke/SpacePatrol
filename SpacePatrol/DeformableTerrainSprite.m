@@ -44,9 +44,10 @@ typedef struct Vertex {
 	
 	HMVectorNode *_debugNode;
 	
-	CCTexture2D *_samplerTexture;
+	CCTexture2D *_densityTexture;
 	CCTexture2D *_terrainTexture;
 	CCTexture2D *_crustTexture;
+	CCTexture2D *_mixTexture;
 	GLuint _vao, _vbo;
 	
 	CGImageRef _hole;
@@ -86,7 +87,7 @@ typedef struct Vertex {
 		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];;
 		
 		
-		_samplerTexture = [[CCTexture2D alloc]
+		_densityTexture = [[CCTexture2D alloc]
 			initWithData:_sampler.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
 			pixelsWide:_sampler.width pixelsHigh:_sampler.height
 			contentSize:CGSizeMake(_sampler.width, _sampler.height)
@@ -97,6 +98,7 @@ typedef struct Vertex {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 		// I was too lazy to load an alpha texture the hard way... So I just made a sampler which did it for me.
+		// You could use GLKit if you wanted to go iOS 5 only.
 		ChipmunkImageSampler *crust = [ChipmunkImageSampler samplerWithImageFile:[[NSBundle mainBundle] URLForResource:@"Crust" withExtension:@"png"] isMask:TRUE];
 		_crustTexture = [[CCTexture2D alloc]
 			initWithData:crust.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
@@ -108,13 +110,15 @@ typedef struct Vertex {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
+		_mixTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainMix.png"];
+		
 		CCGLProgram *shader = [[CCGLProgram alloc]
 			initWithVertexShaderFilename:@"DeformableTerrain.vsh"
 			fragmentShaderFilename:@"DeformableTerrain.fsh"
 		];
 		
 		[shader addAttribute:@"position" index:0];
-		[shader addAttribute:@"sampler_texcoord" index:1];
+		[shader addAttribute:@"density_texcoord" index:1];
 		[shader addAttribute:@"texcoord" index:2];
 		
 		[shader link];
@@ -124,9 +128,10 @@ typedef struct Vertex {
 		glUniform3f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0);
 		glUniform3f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0);
 		
-		glUniform1i(glGetUniformLocation(shader->program_, "sampler_texture"), 0);
+		glUniform1i(glGetUniformLocation(shader->program_, "density_texture"), 0);
 		glUniform1i(glGetUniformLocation(shader->program_, "terrain_texture"), 1);
 		glUniform1i(glGetUniformLocation(shader->program_, "crust_texture"), 2);
+		glUniform1i(glGetUniformLocation(shader->program_, "mix_texture"), 3);
 		
 		
     glGenVertexArraysOES(1, &_vao);
@@ -181,13 +186,16 @@ typedef struct Vertex {
 -(void)draw
 {
 	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ccGLBindTexture2D(_samplerTexture.name);
+	ccGLBindTexture2D(_densityTexture.name);
 	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, _terrainTexture.name);
 	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, _crustTexture.name);
+	
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, _mixTexture.name);
 	
 	glActiveTexture(GL_TEXTURE0);
 	
@@ -221,8 +229,6 @@ Clamp(int i, int min, int max)
 	CGFloat radius = 50.0;
 	CGRect rect = CGRectMake(pos.x - radius/2.0, pos.y - radius/2.0, radius, radius);
 	
-//	CGContextSetGrayFillColor(ctx, 0.0, 1.0);
-//	CGContextFillEllipseInRect(ctx, rect);
 	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
 	CGContextDrawImage(ctx, rect, _hole);
 	
@@ -248,7 +254,7 @@ Clamp(int i, int min, int max)
 	GLubyte *dirtyPixels = alloca(w*h);
 	for(int i=0; i<h; i++) memcpy(dirtyPixels + i*w, pixels + (i + y)*stride + x, w);
 	
-	glBindTexture(GL_TEXTURE_2D, _samplerTexture.name);
+	glBindTexture(GL_TEXTURE_2D, _densityTexture.name);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_ALPHA, GL_UNSIGNED_BYTE, dirtyPixels);
 	
 //	PRINT_GL_ERRORS();

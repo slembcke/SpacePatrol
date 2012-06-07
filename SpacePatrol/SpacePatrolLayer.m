@@ -89,7 +89,7 @@ enum Z_ORDER {
 		cpFloat mass = 1.0;
 		cpFloat radius = 30.0;
 		body = [space add:[ChipmunkBody bodyWithMass:mass andMoment:cpMomentForCircle(mass, 0.0, radius, cpvzero)]];
-		body.pos = cpv(2.0*radius, terrain.sampler.height*terrain.texelSize/2.0);
+		body.pos = cpv(2.0*radius, terrain.sampler.height*terrain.texelSize/3.0);
 		
 		ChipmunkShape *shape = [space add:[ChipmunkCircleShape circleWithBody:body radius:radius offset:cpvzero]];
 		shape.friction = 1.0;
