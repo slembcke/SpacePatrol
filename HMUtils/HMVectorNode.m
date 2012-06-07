@@ -118,6 +118,8 @@ typedef struct Triangle {Vertex a, b, c;} Triangle;
 	
 	glDeleteBuffers(1, &_vbo); _vbo = 0;
 	glDeleteVertexArraysOES(1, &_vao); _vao = 0;
+	
+	[super dealloc];
 }
 
 //MARK: Rendering

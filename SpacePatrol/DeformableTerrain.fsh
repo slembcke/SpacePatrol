@@ -25,6 +25,7 @@ varying mediump vec2 frag_parallax_texcoord;
 varying mediump vec2 frag_density_texcoord;
 varying mediump vec2 frag_terrain_texcoord;
 
+//uniform lowp vec4 sky_color;
 uniform lowp vec4 crust_color;
 
 uniform sampler2D sky_texture;
@@ -46,6 +47,5 @@ void main()
 	lowp vec4 mix_color = texture2D(mix_texture, vec2(density, crust));
 	lowp vec4 terrain_color = texture2D(terrain_texture, frag_terrain_texcoord);
 	
-	lowp vec4 color = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
-	gl_FragColor = vec4(color.rgb, 1.0);
+	gl_FragColor = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
 }

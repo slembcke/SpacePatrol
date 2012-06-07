@@ -89,7 +89,7 @@ typedef struct Vertex {
 		
 		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];;
 		
-		_skyTexture = [[CCTextureCache sharedTextureCache] addImage:@"Stars.png"];
+		_skyTexture = [[CCTextureCache sharedTextureCache] addImage:@"Sky.png"];
 		
 		_parallaxTexture = [[CCTextureCache sharedTextureCache] addImage:@"Parallax.png"];
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -132,8 +132,13 @@ typedef struct Vertex {
 		[shader updateUniforms];
 		self.shaderProgram = shader;
 		
-		glUniform1f(glGetUniformLocation(shader->program_, "parallax_scale"), 1.0/10000.0);
+		CGSize winSize = [CCDirector sharedDirector].winSizeInPixels;
+		CGSize texSize = _parallaxTexture.contentSizeInPixels;
+		glUniform2f(glGetUniformLocation(shader->program_, "parallax_scale"), winSize.width/texSize.width, winSize.height/texSize.height);
+		glUniform1f(glGetUniformLocation(shader->program_, "parallax_speed"), 1.0/10000.0);
 		glUniform1f(glGetUniformLocation(shader->program_, "parallax_offset"), 0.5);
+		
+//		glUniform4f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0, 1.0);
 		glUniform4f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0, 1.0);
 		
 		glUniform1i(glGetUniformLocation(shader->program_, "density_texture"), 0);
@@ -195,7 +200,7 @@ typedef struct Vertex {
 
 -(void)draw
 {
-	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ccGLEnable(CC_GL_BLEND);
 	ccGLBindTexture2D(_densityTexture.name);
 	
 	glActiveTexture(GL_TEXTURE1);

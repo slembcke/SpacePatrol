@@ -20,7 +20,9 @@
  */
 
 uniform highp mat4 projection;
-uniform highp float parallax_scale;
+
+uniform highp vec2 parallax_scale;
+uniform highp float parallax_speed;
 uniform highp float parallax_offset;
 
 attribute highp vec2 position;
@@ -42,7 +44,7 @@ void main()
 	
 	mediump vec2 texture_space = (-0.5*clip_space + 0.5).xy;
 	frag_sky_texcoord = texture_space;
-	frag_parallax_texcoord = texture_space - position*parallax_scale + vec2(0.0, parallax_offset);
+	frag_parallax_texcoord = parallax_scale*(texture_space - position*parallax_speed + vec2(0.0, parallax_offset));
 	
 	frag_density_texcoord = density_texcoord;
 	frag_terrain_texcoord = texcoord;
