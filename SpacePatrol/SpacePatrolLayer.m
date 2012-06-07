@@ -63,6 +63,8 @@ enum Z_ORDER {
 	DeformableTerrainSprite *terrain;
 	
 	ChipmunkBody *body;
+	
+	ccTime _accumulator, _fixedTime;
 }
 
 +(CCScene *)scene
@@ -81,7 +83,7 @@ enum Z_ORDER {
 		
 		// Setup the space
 		space = [[ChipmunkSpace alloc] init];
-		space.gravity = cpv(0.0f, -400.0f);
+		space.gravity = cpv(0.0f, -GRAVITY);
 		
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:8.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
@@ -94,7 +96,7 @@ enum Z_ORDER {
 		ChipmunkShape *shape = [space add:[ChipmunkCircleShape circleWithBody:body radius:radius offset:cpvzero]];
 		shape.friction = 1.0;
 		
-		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
+//		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
 		
 		// Add a ChipmunkDebugNode to draw the space.
 		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
@@ -146,6 +148,11 @@ cpBBFromCGRect(CGRect rect)
 	return cpBBNew(CGRectGetMinX(rect), CGRectGetMinY(rect), CGRectGetMaxX(rect), CGRectGetMaxY(rect));
 }
 
+-(void)tick:(ccTime)fixed_dt
+{
+	[space step:fixed_dt];
+}
+
 -(void)update:(ccTime)dt
 {
 #if TARGET_IPHONE_SIMULATOR
@@ -154,10 +161,10 @@ cpBBFromCGRect(CGRect rect)
 	CMAcceleration gravity = motionManager.accelerometerData.acceleration;
 #endif
 	
-	space.gravity = cpvmult(cpv(-gravity.y, gravity.x), 400.0f);
+	space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
 	
 	CGAffineTransform trans = CGAffineTransformInvert([terrain nodeToWorldTransform]);
-	CGRect screen = {CGPointZero, [CCDirector sharedDirector].winSize};
+	CGRect screen = CGRectMake(-100, -100, 680, 520);
 	CGRect rect = CGRectApplyAffineTransform(screen, trans);
 	
 //	NSLog(@"rect: %@", NSStringFromCGRect(rect));
@@ -166,8 +173,14 @@ cpBBFromCGRect(CGRect rect)
 	[terrain.tiles ensureRect:cpBBFromCGRect(rect)];
 	
 	// Update the physics
-	ccTime fixed_dt = [CCDirector sharedDirector].animationInterval;
-	[space step:fixed_dt];
+	ccTime fixed_dt = 1.0/240.0;
+	
+	_accumulator += dt;
+	while(_accumulator > fixed_dt){
+		[self tick:fixed_dt];
+		_accumulator -= fixed_dt;
+		_fixedTime += fixed_dt;
+	}
 	
 	world.position = cpvsub(cpv(240, 160), body.pos);
 }

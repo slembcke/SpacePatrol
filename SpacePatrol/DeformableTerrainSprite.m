@@ -226,7 +226,7 @@ Clamp(int i, int min, int max)
 {
 	CGContextRef ctx = _sampler.context;
 	
-	CGFloat radius = 50.0;
+	CGFloat radius = 100.0;
 	CGRect rect = CGRectMake(pos.x - radius/2.0, pos.y - radius/2.0, radius, radius);
 	
 	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
