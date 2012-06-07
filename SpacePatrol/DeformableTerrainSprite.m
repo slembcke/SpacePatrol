@@ -44,6 +44,9 @@ typedef struct Vertex {
 	
 	HMVectorNode *_debugNode;
 	
+	CCTexture2D *_skyTexture;
+	CCTexture2D *_parallaxTexture;
+	
 	CCTexture2D *_densityTexture;
 	CCTexture2D *_terrainTexture;
 	CCTexture2D *_crustTexture;
@@ -80,12 +83,16 @@ typedef struct Vertex {
 		_tileSize = tileSize;
 		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:_tileSize*_texelScale samplesPerTile:_tileSize + 1 cacheSize:256];
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);
-		_tiles.segmentRadius = 2;
-		_tiles.simplifyThreshold = 2;
+		_tiles.segmentRadius = 5.0;
+		_tiles.simplifyThreshold = 2.0;
 		
 		
 		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];;
 		
+		_skyTexture = [[CCTextureCache sharedTextureCache] addImage:@"Stars.png"];
+		
+		_parallaxTexture = [[CCTextureCache sharedTextureCache] addImage:@"Parallax.png"];
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		
 		_densityTexture = [[CCTexture2D alloc]
 			initWithData:_sampler.pixelData.bytes pixelFormat:kCCTexture2DPixelFormat_A8
@@ -125,13 +132,16 @@ typedef struct Vertex {
 		[shader updateUniforms];
 		self.shaderProgram = shader;
 		
-		glUniform3f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0);
-		glUniform3f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0);
+		glUniform1f(glGetUniformLocation(shader->program_, "parallax_scale"), 1.0/10000.0);
+		glUniform1f(glGetUniformLocation(shader->program_, "parallax_offset"), 0.5);
+		glUniform4f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0, 1.0);
 		
 		glUniform1i(glGetUniformLocation(shader->program_, "density_texture"), 0);
 		glUniform1i(glGetUniformLocation(shader->program_, "terrain_texture"), 1);
 		glUniform1i(glGetUniformLocation(shader->program_, "crust_texture"), 2);
 		glUniform1i(glGetUniformLocation(shader->program_, "mix_texture"), 3);
+		glUniform1i(glGetUniformLocation(shader->program_, "sky_texture"), 4);
+		glUniform1i(glGetUniformLocation(shader->program_, "parallax_texture"), 5);
 		
 		
     glGenVertexArraysOES(1, &_vao);
@@ -197,6 +207,12 @@ typedef struct Vertex {
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, _mixTexture.name);
 	
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, _skyTexture.name);
+	
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, _parallaxTexture.name);
+	
 	glActiveTexture(GL_TEXTURE0);
 	
 	CCGLProgram *shader = self.shaderProgram;
@@ -239,10 +255,10 @@ Clamp(int i, int min, int max)
 	
 	cpBB bb = cpBBFromCGRect(CGRectApplyAffineTransform(rect, trans));
 	int sw = _sampler.width, sh = _sampler.height;
-	int x = Clamp(bb.l, 0, sw) & ~3;
-	int y = Clamp(bb.b, 0, sh);
-	int w = Clamp(bb.r, 0, sw) - x; w = ((w - 1) | 3) + 1;
-	int h = Clamp(bb.t, 0, sh) - y;
+	int x = Clamp(bb.l - 1.0, 0, sw) & ~3;
+	int y = Clamp(bb.b - 1.0, 0, sh);
+	int w = Clamp(bb.r + 1.0, 0, sw) - x; w = ((w - 1) | 3) + 1;
+	int h = Clamp(bb.t + 1.0, 0, sh) - y;
 	
 	// x is rounded down by 4 and w is rounded up by 4
 	// This ensures the final width is always a multiple of 4 bytes

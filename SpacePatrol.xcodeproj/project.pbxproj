@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */; };
 		D351A41C1580112900F74BF1 /* Crust.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A4191580112900F74BF1 /* Crust.png */; };
-		D351A41D1580112900F74BF1 /* TerrainDetail-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */; };
-		D351A41E1580112900F74BF1 /* TerrainDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A41B1580112900F74BF1 /* TerrainDetail.png */; };
+		D351A42D15812EFC00F74BF1 /* Parallax.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A42B15812EFC00F74BF1 /* Parallax.psd */; };
+		D351A42E15812EFC00F74BF1 /* Stars.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A42C15812EFC00F74BF1 /* Stars.psd */; };
+		D351A43115812F6F00F74BF1 /* TerrainDetail.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A43015812F6F00F74BF1 /* TerrainDetail.psd */; };
 		D352333F1580F27A00466A06 /* TerrainMix.png in Resources */ = {isa = PBXBuildFile; fileRef = D352333E1580F27A00466A06 /* TerrainMix.png */; };
 		D37893EB15769BCD006CBEE8 /* libChipmunkPro-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893E915769BCD006CBEE8 /* libChipmunkPro-iPhone.a */; };
 		D37893ED15769BFD006CBEE8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893EC15769BFD006CBEE8 /* ImageIO.framework */; };
@@ -193,8 +194,9 @@
 		D33F53B0157FB95A00DD9246 /* SpacePatrolLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacePatrolLayer.h; sourceTree = "<group>"; };
 		D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpacePatrolLayer.m; sourceTree = "<group>"; };
 		D351A4191580112900F74BF1 /* Crust.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Crust.png; sourceTree = "<group>"; };
-		D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TerrainDetail-hd.png"; sourceTree = "<group>"; };
-		D351A41B1580112900F74BF1 /* TerrainDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TerrainDetail.png; sourceTree = "<group>"; };
+		D351A42B15812EFC00F74BF1 /* Parallax.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Parallax.psd; sourceTree = "<group>"; };
+		D351A42C15812EFC00F74BF1 /* Stars.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stars.psd; sourceTree = "<group>"; };
+		D351A43015812F6F00F74BF1 /* TerrainDetail.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TerrainDetail.psd; sourceTree = "<group>"; };
 		D352333E1580F27A00466A06 /* TerrainMix.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TerrainMix.png; sourceTree = "<group>"; };
 		D37893C015769BCD006CBEE8 /* chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk.h; sourceTree = "<group>"; };
 		D37893C115769BCD006CBEE8 /* chipmunk_ffi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk_ffi.h; sourceTree = "<group>"; };
@@ -665,10 +667,11 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D351A43015812F6F00F74BF1 /* TerrainDetail.psd */,
+				D351A42B15812EFC00F74BF1 /* Parallax.psd */,
+				D351A42C15812EFC00F74BF1 /* Stars.psd */,
 				D352333E1580F27A00466A06 /* TerrainMix.png */,
 				D351A4191580112900F74BF1 /* Crust.png */,
-				D351A41A1580112900F74BF1 /* TerrainDetail-hd.png */,
-				D351A41B1580112900F74BF1 /* TerrainDetail.png */,
 				D38FE0F6157FB3EE00E47812 /* Hole.png */,
 				D3F8E003157D755000457513 /* Terrain.png */,
 			);
@@ -1279,9 +1282,10 @@
 				D3F8E004157D755000457513 /* Terrain.png in Resources */,
 				D38FE0F7157FB3EE00E47812 /* Hole.png in Resources */,
 				D351A41C1580112900F74BF1 /* Crust.png in Resources */,
-				D351A41D1580112900F74BF1 /* TerrainDetail-hd.png in Resources */,
-				D351A41E1580112900F74BF1 /* TerrainDetail.png in Resources */,
 				D352333F1580F27A00466A06 /* TerrainMix.png in Resources */,
+				D351A42D15812EFC00F74BF1 /* Parallax.psd in Resources */,
+				D351A42E15812EFC00F74BF1 /* Stars.psd in Resources */,
+				D351A43115812F6F00F74BF1 /* TerrainDetail.psd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

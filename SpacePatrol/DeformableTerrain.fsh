@@ -19,40 +19,33 @@
  * SOFTWARE.
  */
 
-#extension GL_OES_standard_derivatives : enable
-
-// Enabling AA of the terrain will probably cut the framerate in half on an iPhone 4
-#define ENABLE_AA 1
+varying mediump vec2 frag_sky_texcoord;
+varying mediump vec2 frag_parallax_texcoord;
 
 varying mediump vec2 frag_density_texcoord;
-varying mediump vec2 frag_texcoord;
+varying mediump vec2 frag_terrain_texcoord;
 
-uniform lowp vec3 sky_color;
-uniform lowp vec3 crust_color;
+uniform lowp vec4 crust_color;
+
+uniform sampler2D sky_texture;
+uniform sampler2D parallax_texture;
 
 uniform sampler2D density_texture;
 uniform sampler2D terrain_texture;
 uniform sampler2D crust_texture;
 uniform sampler2D mix_texture;
 
-highp float step_aa(highp float threshold, highp float alpha)
-{
-#if defined GL_OES_standard_derivatives && ENABLE_AA
-	highp float aa = 0.5*fwidth(alpha);
-	return smoothstep(threshold - aa, threshold + aa, alpha);
-#else
-	return step(threshold, alpha);
-#endif
-}
-
 void main()
 {
+	lowp vec4 sky_color = texture2D(sky_texture, frag_sky_texcoord);
+	lowp vec4 parallax_color = texture2D(parallax_texture, frag_parallax_texcoord);
+	lowp vec4 bg_color = mix(sky_color, parallax_color, parallax_color.a);
+	
 	highp float density = texture2D(density_texture, frag_density_texcoord).a;
-	highp float crust = texture2D(crust_texture, frag_texcoord).a;
-	
-	lowp vec3 terrain_color = texture2D(terrain_texture, frag_texcoord).rgb;
-	
+	highp float crust = texture2D(crust_texture, frag_terrain_texcoord).a;
 	lowp vec4 mix_color = texture2D(mix_texture, vec2(density, crust));
-	lowp vec3 color = mix(mix(sky_color, terrain_color, mix_color.a), crust_color, mix_color.r);
-	gl_FragColor = vec4(color, 1.0);
+	lowp vec4 terrain_color = texture2D(terrain_texture, frag_terrain_texcoord);
+	
+	lowp vec4 color = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
+	gl_FragColor = vec4(color.rgb, 1.0);
 }
