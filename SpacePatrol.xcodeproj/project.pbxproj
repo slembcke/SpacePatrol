@@ -12,6 +12,7 @@
 		D351A43E15814B7500F74BF1 /* Sky.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A43C15814B7500F74BF1 /* Sky.psd */; };
 		D351A44415814E7E00F74BF1 /* TerrainDetail.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A44315814E7E00F74BF1 /* TerrainDetail.psd */; };
 		D351A446158152AC00F74BF1 /* Parallax.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A445158152AC00F74BF1 /* Parallax.psd */; };
+		D351A459158266D200F74BF1 /* Mound.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A458158266D200F74BF1 /* Mound.png */; };
 		D352333F1580F27A00466A06 /* TerrainMix.png in Resources */ = {isa = PBXBuildFile; fileRef = D352333E1580F27A00466A06 /* TerrainMix.png */; };
 		D37893EB15769BCD006CBEE8 /* libChipmunkPro-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893E915769BCD006CBEE8 /* libChipmunkPro-iPhone.a */; };
 		D37893ED15769BFD006CBEE8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893EC15769BFD006CBEE8 /* ImageIO.framework */; };
@@ -197,6 +198,7 @@
 		D351A43C15814B7500F74BF1 /* Sky.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sky.psd; sourceTree = "<group>"; };
 		D351A44315814E7E00F74BF1 /* TerrainDetail.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TerrainDetail.psd; sourceTree = "<group>"; };
 		D351A445158152AC00F74BF1 /* Parallax.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Parallax.psd; sourceTree = "<group>"; };
+		D351A458158266D200F74BF1 /* Mound.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Mound.png; sourceTree = "<group>"; };
 		D352333E1580F27A00466A06 /* TerrainMix.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TerrainMix.png; sourceTree = "<group>"; };
 		D37893C015769BCD006CBEE8 /* chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk.h; sourceTree = "<group>"; };
 		D37893C115769BCD006CBEE8 /* chipmunk_ffi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk_ffi.h; sourceTree = "<group>"; };
@@ -673,6 +675,7 @@
 				D352333E1580F27A00466A06 /* TerrainMix.png */,
 				D351A4191580112900F74BF1 /* Crust.png */,
 				D38FE0F6157FB3EE00E47812 /* Hole.png */,
+				D351A458158266D200F74BF1 /* Mound.png */,
 				D3F8E003157D755000457513 /* Terrain.png */,
 			);
 			path = Assets;
@@ -1286,6 +1289,7 @@
 				D351A43E15814B7500F74BF1 /* Sky.psd in Resources */,
 				D351A44415814E7E00F74BF1 /* TerrainDetail.psd in Resources */,
 				D351A446158152AC00F74BF1 /* Parallax.psd in Resources */,
+				D351A459158266D200F74BF1 /* Mound.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -44,6 +44,9 @@ typedef struct Vertex {
 	
 	HMVectorNode *_debugNode;
 	
+	CGImageRef _hole;
+	CGImageRef _mound;
+	
 	CCTexture2D *_skyTexture;
 	CCTexture2D *_parallaxTexture;
 	
@@ -51,9 +54,8 @@ typedef struct Vertex {
 	CCTexture2D *_terrainTexture;
 	CCTexture2D *_crustTexture;
 	CCTexture2D *_mixTexture;
-	GLuint _vao, _vbo;
 	
-	CGImageRef _hole;
+	GLuint _vao, _vbo;
 }
 
 @synthesize texelSize = _texelScale;
@@ -87,7 +89,9 @@ typedef struct Vertex {
 		_tiles.simplifyThreshold = 2.0;
 		
 		
-		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];;
+		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];
+		_mound = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Mound" withExtension:@"png"]];
+		
 		
 		_skyTexture = [[CCTextureCache sharedTextureCache] addImage:@"Sky.png"];
 		
@@ -249,6 +253,9 @@ Clamp(int i, int min, int max)
 	
 	CGFloat radius = 100.0;
 	CGRect rect = CGRectMake(pos.x - radius/2.0, pos.y - radius/2.0, radius, radius);
+	
+//	CGContextSetBlendMode(ctx, kCGBlendModeScreen);
+//	CGContextDrawImage(ctx, rect, _mound);
 	
 	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
 	CGContextDrawImage(ctx, rect, _hole);
