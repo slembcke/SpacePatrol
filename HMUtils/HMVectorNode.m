@@ -137,6 +137,7 @@ typedef struct Triangle {Vertex a, b, c;} Triangle;
 
 -(void)draw
 {
+	ccGLEnable(CC_GL_BLEND);
 	ccGLBlendFunc(_blendFunc.src, _blendFunc.dst);
 	
 	[shaderProgram_ use];

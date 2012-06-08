@@ -204,7 +204,7 @@ typedef struct Vertex {
 
 -(void)draw
 {
-	ccGLEnable(CC_GL_BLEND);
+	ccGLEnable(0);
 	ccGLBindTexture2D(_densityTexture.name);
 	
 	glActiveTexture(GL_TEXTURE1);
