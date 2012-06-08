@@ -35,6 +35,6 @@
 
 -(id)initWithSpace:(ChipmunkSpace *)space texelScale:(cpFloat)texelScale tileSize:(int)tileSize;
 
--(void)addHoleAt:(cpVect)pos;
+-(void)modifyTerrainAt:(cpVect)pos radius:(cpFloat)radius remove:(BOOL)remove;
 
 @end

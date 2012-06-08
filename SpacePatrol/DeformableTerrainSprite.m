@@ -247,18 +247,18 @@ Clamp(int i, int min, int max)
 	return MAX(min, MIN(i, max));
 }
 
--(void)addHoleAt:(cpVect)pos;
+-(void)modifyTerrainAt:(cpVect)pos radius:(cpFloat)radius remove:(BOOL)remove;
 {
 	CGContextRef ctx = _sampler.context;
-	
-	CGFloat radius = 100.0;
 	CGRect rect = CGRectMake(pos.x - radius/2.0, pos.y - radius/2.0, radius, radius);
 	
-//	CGContextSetBlendMode(ctx, kCGBlendModeScreen);
-//	CGContextDrawImage(ctx, rect, _mound);
-	
-	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
-	CGContextDrawImage(ctx, rect, _hole);
+	if(remove){
+		CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
+		CGContextDrawImage(ctx, rect, _hole);
+	} else {
+		CGContextSetBlendMode(ctx, kCGBlendModeScreen);
+		CGContextDrawImage(ctx, rect, _mound);
+	}
 	
 	[self.tiles markDirtyRect:cpBBFromCGRect(rect)];
 	

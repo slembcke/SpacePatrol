@@ -62,6 +62,10 @@ enum Z_ORDER {
 	CCNode *world;
 	DeformableTerrainSprite *terrain;
 	
+	UITouch *currentTouch;
+	BOOL currentTouchRemoves;
+	CGPoint lastTouchLocation;
+	
 	ChipmunkBody *body;
 	
 	ccTime _accumulator, _fixedTime;
@@ -153,7 +157,7 @@ cpBBFromCGRect(CGRect rect)
 	[space step:fixed_dt];
 }
 
--(void)update:(ccTime)dt
+-(void)updateGravity
 {
 #if TARGET_IPHONE_SIMULATOR
 	CMAcceleration gravity = {-1, 0, 0};
@@ -162,6 +166,31 @@ cpBBFromCGRect(CGRect rect)
 #endif
 	
 	space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
+}
+
+-(CGPoint)touchLocation:(UITouch *)touch
+{
+	return [terrain convertTouchToNodeSpace:currentTouch];
+}
+
+-(void)modifyTerrain
+{
+	CGFloat radius = 150.0;
+	CGFloat threshold = 0.05*radius;
+	
+	if(currentTouch){
+		CGPoint location = [self touchLocation:currentTouch];
+		
+		if(ccpDistanceSQ(location, lastTouchLocation) > threshold*threshold){
+			[terrain modifyTerrainAt:location radius:radius remove:currentTouchRemoves];
+			lastTouchLocation = location;
+		}
+	}
+}
+
+-(void)update:(ccTime)dt
+{
+	[self modifyTerrain];
 	
 	CGAffineTransform trans = CGAffineTransformInvert([terrain nodeToWorldTransform]);
 	CGRect screen = CGRectMake(-100, -100, 680, 520);
@@ -171,6 +200,8 @@ cpBBFromCGRect(CGRect rect)
 //	[debugNode drawSegmentFrom:rect.origin to:cpvadd(rect.origin, cpv(rect.size.width, rect.size.height)) radius:2.0 color:ccc4f(1, 0, 0, 1)];
 	
 	[terrain.tiles ensureRect:cpBBFromCGRect(rect)];
+	
+	[self updateGravity];
 	
 	// Update the physics
 	ccTime fixed_dt = 1.0/240.0;
@@ -193,16 +224,15 @@ cpBBFromCGRect(CGRect rect)
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[terrain addHoleAt:[terrain convertTouchToNodeSpace:touches.anyObject]];
+	currentTouch = touches.anyObject;
+	
+	cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
+	currentTouchRemoves = (density < 0.5);
 }
 
--(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[terrain addHoleAt:[terrain convertTouchToNodeSpace:touches.anyObject]];
-}
-
--(void)ccTouchesEnded:(UITouch *)touch withEvent:(UIEvent *)event
-{
+	currentTouch = nil;
 }
 
 @end
