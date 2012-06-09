@@ -118,6 +118,7 @@ NSInteger ccLoadFileIntoMemory(const char *filename, unsigned char **out)
 @synthesize iPhoneRetinaDisplaySuffix = iPhoneRetinaDisplaySuffix_;
 @synthesize iPadSuffix = iPadSuffix_;
 @synthesize iPadRetinaDisplaySuffix = iPadRetinaDisplaySuffix_;
+@synthesize iPadRetinaScale = iPadRetinaScale_;
 @synthesize enableFallbackSuffixes = enableFallbackSuffixes_;
 #endif // __CC_PLATFORM_IOS
 
@@ -147,6 +148,9 @@ NSInteger ccLoadFileIntoMemory(const char *filename, unsigned char **out)
 		iPadRetinaDisplaySuffix_ = @"-ipadhd";
 		
 		enableFallbackSuffixes_ = NO;
+		
+		iPhoneRetinaScale_ = 2.0;
+		iPadRetinaScale_ = 2.0;
 #endif // __CC_PLATFORM_IOS
 
 	}
@@ -314,14 +318,14 @@ NSInteger ccLoadFileIntoMemory(const char *filename, unsigned char **out)
 
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 	{
-		if( CC_CONTENT_SCALE_FACTOR() == 2 )
+		if( CC_CONTENT_SCALE_FACTOR() == iPadRetinaScale_ )
 			ret = kCCiPadRetinaDisplay;
 		else
 			ret = kCCiPad;
 	}
 	else
 	{
-		if( CC_CONTENT_SCALE_FACTOR() == 2 )
+		if( CC_CONTENT_SCALE_FACTOR() == iPhoneRetinaScale_ )
 			ret = kCCiPhoneRetinaDisplay;
 		else
 			ret = kCCiPhone;

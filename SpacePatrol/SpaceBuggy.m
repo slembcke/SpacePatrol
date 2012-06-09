@@ -67,7 +67,7 @@ enum {
 		_body = [ChipmunkBody bodyWithMass:WHEEL_MASS andMoment:cpMomentForCircle(WHEEL_MASS, 0.0, radius, cpvzero)];
 		
 		ChipmunkShape *shape = [ChipmunkCircleShape circleWithBody:_body radius:radius offset:cpvzero];
-		shape.friction = 1.5;
+		shape.friction = 1.0;
 		shape.group = PhysicsIdentifier(BUGGY);
 		shape.layers = COLLISION_LAYERS_BUGGY;
 		

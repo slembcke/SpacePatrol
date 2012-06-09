@@ -135,6 +135,7 @@ and when to execute the Scenes.
 	/* CCDirector delegate */
 	id<CCDirectorDelegate>	delegate_;
 
+@public
 	/* window size in points */
 	CGSize	winSizeInPoints_;
 

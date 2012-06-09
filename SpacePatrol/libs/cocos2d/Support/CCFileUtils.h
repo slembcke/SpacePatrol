@@ -43,6 +43,9 @@
 	NSString *iPhoneRetinaDisplaySuffix_;
 	NSString *iPadSuffix_;
 	NSString *iPadRetinaDisplaySuffix_;
+	
+	CGFloat iPhoneRetinaScale_;
+	CGFloat iPadRetinaScale_;
 #endif // __CC_PLATFORM_IOS
 }
 
@@ -81,6 +84,8 @@
  @since v2.0
  */
 @property (nonatomic,readwrite, copy, setter = setiPadRetinaDisplaySuffix:) NSString *iPadRetinaDisplaySuffix;
+
+@property (nonatomic, assign, setter = setiPadRetinaScale:) CGFloat iPadRetinaScale;
 
 /** Whether of not the fallback sufixes is enabled.
  When enabled it will try to search for the following suffixes in the following order until one is found:

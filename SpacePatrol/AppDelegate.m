@@ -28,16 +28,32 @@
 
 @synthesize window=window_, navController=navController_, director=director_;
 
+-(void)updateProjection
+{
+	kmGLMatrixMode(KM_GL_PROJECTION);
+	kmGLLoadIdentity();
+
+	kmMat4 orthoMatrix;
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
+		kmMat4OrthographicProjection(&orthoMatrix, 0, 480, 0, 320, -1024, 1024 );
+	} else {
+		kmMat4OrthographicProjection(&orthoMatrix, -16, 496, -32, 352, -1024, 1024 );
+	}
+	kmGLMultMatrix( &orthoMatrix );
+
+	kmGLMatrixMode(KM_GL_MODELVIEW);
+	kmGLLoadIdentity();
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	// Create the main window
 	window_ = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
 	
-	// Create an CCGLView with a RGB565 color buffer, and a depth buffer of 0-bits
 	CCGLView *glView = [CCGLView viewWithFrame:[window_ bounds]
-								   pixelFormat:kEAGLColorFormatRGB565	//kEAGLColorFormatRGBA8
-								   depthFormat:0	//GL_DEPTH_COMPONENT24_OES
+								   pixelFormat:kEAGLColorFormatRGBA8
+								   depthFormat:0
 							preserveBackbuffer:NO
 									sharegroup:nil
 								 multiSampling:NO
@@ -63,7 +79,7 @@
 	[director_ setDelegate:self];
 	
 	// 2D projection
-	[director_ setProjection:kCCDirectorProjection2D];
+	[director_ setProjection:kCCDirectorProjectionCustom];
 	//	[director setProjection:kCCDirectorProjection3D];
 	
 	// Enables High Res mode (Retina Display) on iPhone 4 and maintains low res on all other devices
@@ -81,6 +97,14 @@
 	// make main window visible
 	[window_ makeKeyAndVisible];
 	
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+		director_->winSizeInPoints_ = CGSizeMake(512, 384);
+		director_->winSizeInPixels_ = CGSizeMake(1024, 768);
+		__ccContentScaleFactor = 2;
+		
+		[director_ createStatsLabel];
+	}
+	
 	// Default texture format for PNG/BMP/TIFF/JPEG/GIF images
 	// It can be RGBA8888, RGBA4444, RGB5_A1, RGB565
 	// You can change anytime.
@@ -95,8 +119,9 @@
 	CCFileUtils *sharedFileUtils = [CCFileUtils sharedFileUtils];
 	[sharedFileUtils setEnableFallbackSuffixes:NO];				// Default: NO. No fallback suffixes are going to be used
 	[sharedFileUtils setiPhoneRetinaDisplaySuffix:@"-hd"];		// Default on iPhone RetinaDisplay is "-hd"
-	[sharedFileUtils setiPadSuffix:@"-ipad"];					// Default on iPad is "ipad"
-	[sharedFileUtils setiPadRetinaDisplaySuffix:@"-ipadhd"];	// Default on iPad RetinaDisplay is "-ipadhd"
+	[sharedFileUtils setiPadSuffix:@"-hd"];					// Default on iPad is "ipad"
+	[sharedFileUtils setiPadRetinaDisplaySuffix:@"-hd"];	// Default on iPad RetinaDisplay is "-ipadhd"
+	[sharedFileUtils setiPadRetinaScale:4.0];
 	
 	// Assume that PVR images have premultiplied alpha
 	[CCTexture2D PVRImagesHavePremultipliedAlpha:YES];

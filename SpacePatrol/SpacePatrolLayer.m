@@ -236,7 +236,7 @@ cpBBFromCGRect(CGRect rect)
 -(void)modifyTerrain
 {
 	CGFloat radius = 100.0;
-	CGFloat threshold = 0.05*radius;
+	CGFloat threshold = 0.025*radius;
 	
 	CGPoint location = [self touchLocation:currentTouch];
 	
@@ -257,9 +257,6 @@ cpBBFromCGRect(CGRect rect)
 	CGRect screen = CGRectMake(-100, -100, 680, 520);
 	CGRect rect = CGRectApplyAffineTransform(screen, trans);
 	
-//	NSLog(@"rect: %@", NSStringFromCGRect(rect));
-//	[debugNode drawSegmentFrom:rect.origin to:cpvadd(rect.origin, cpv(rect.size.width, rect.size.height)) radius:2.0 color:ccc4f(1, 0, 0, 1)];
-	
 	[terrain.tiles ensureRect:cpBBFromCGRect(rect)];
 	
 	[self updateGravity];
@@ -277,7 +274,9 @@ cpBBFromCGRect(CGRect rect)
 	[buggy sync];
 	if(multiGrab.grabCount == 0){
 		// TODO Should smooth this out better.
-		world.position = cpvsub(cpv(240, 160), cpBBClampVect(cpBBNew(240, 160, terrain.width - 240, terrain.height - 160), buggy.pos));
+		CGSize winSize = [CCDirector sharedDirector].winSize;
+		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, terrain.width - winSize.width/2.0, terrain.height - winSize.height/2.0);
+		world.position = cpvsub(cpv(240, 160), cpBBClampVect(clampingBB, buggy.pos));
 	}
 }
 

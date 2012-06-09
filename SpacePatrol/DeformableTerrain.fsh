@@ -25,7 +25,6 @@ varying mediump vec2 frag_parallax_texcoord;
 varying mediump vec2 frag_density_texcoord;
 varying mediump vec2 frag_terrain_texcoord;
 
-//uniform lowp vec4 sky_color;
 uniform lowp vec4 crust_color;
 
 uniform sampler2D sky_texture;

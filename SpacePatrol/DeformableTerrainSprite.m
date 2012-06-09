@@ -88,7 +88,7 @@ typedef struct Vertex {
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);
 		_tiles.segmentLayers = COLLISION_LAYERS_TERRAIN;
 		_tiles.segmentRadius = 5.0;
-		_tiles.simplifyThreshold = 2.0;
+		_tiles.simplifyThreshold = 1.0;
 		
 		
 		_hole = [ChipmunkImageSampler loadImage:[[NSBundle mainBundle] URLForResource:@"Hole" withExtension:@"png"]];
@@ -118,8 +118,6 @@ typedef struct Vertex {
 			pixelsWide:crust.width pixelsHigh:crust.height
 			contentSize:CGSizeMake(crust.width, crust.height)
 		];
-		
-//		_crustTexture = [[CCTextureCache sharedTextureCache] addImage:@"Crust.png"];
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		

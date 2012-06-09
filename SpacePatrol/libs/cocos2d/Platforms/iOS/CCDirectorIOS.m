@@ -321,10 +321,27 @@ CGFloat	__ccContentScaleFactor = 1;
 
 -(CGPoint)convertToGL:(CGPoint)uiPoint
 {
-	CGSize s = winSizeInPoints_;
-	float newY = s.height - uiPoint.y;
-
-	return ccp( uiPoint.x, newY );
+	kmMat4 projection;
+	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
+	
+	kmMat4 inv_projection;
+	kmMat4Inverse(&inv_projection, &projection);
+	
+	CGSize glSize = view_.bounds.size;
+	kmVec3 glCoord;
+	kmVec3 v = {2.0*uiPoint.x/glSize.width - 1.0, 1.0 - 2.0*uiPoint.y/glSize.height};
+	kmVec3TransformCoord(&glCoord, &v, &inv_projection);
+	
+	return ccp(glCoord.x, glCoord.y);
+//	CGSize s = winSizeInPoints_;
+//	float newY = s.height - uiPoint.y;
+//
+//	return ccp( uiPoint.x, newY );
+//	CGSize s = winSizeInPoints_;
+//	float newY = s.height - uiPoint.y;
+//
+//	return ccp(480.0*uiPoint.x/1024.0 - 16, 320.0*newY/768.0 - 32 );
+	
 }
 
 -(CGPoint)convertToUI:(CGPoint)glPoint

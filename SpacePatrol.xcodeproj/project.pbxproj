@@ -1522,6 +1522,7 @@
 				GCC_PREFIX_HEADER = SpacePatrol/Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"SpacePatrol/libs/kazmath/include\"";
 				INFOPLIST_FILE = SpacePatrol/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ChipmunkPro-iPhone-Trial\"",
@@ -1533,7 +1534,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = SpacePatrol;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"SpacePatrol/libs/Chipmunk/include/chipmunk\"";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1548,6 +1549,7 @@
 				GCC_PREFIX_HEADER = SpacePatrol/Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"SpacePatrol/libs/kazmath/include\"";
 				INFOPLIST_FILE = SpacePatrol/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ChipmunkPro-iPhone-Trial\"",
@@ -1559,7 +1561,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = SpacePatrol;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"SpacePatrol/libs/Chipmunk/include/chipmunk\"";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;

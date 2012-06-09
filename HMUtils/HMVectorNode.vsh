@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
 
+
 uniform mediump mat4 projection;
 
 attribute mediump vec4 position;
