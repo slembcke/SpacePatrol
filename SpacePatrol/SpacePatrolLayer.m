@@ -46,57 +46,6 @@ enum Z_ORDER {
 };
 
 
-//@interface MashableButton : CCLayer<CCTargetedTouchDelegate>
-//
-//@property(nonatomic, readonly) BOOL value;
-//
-//@end
-//
-//
-//@implementation MashableButton
-//
-//@synthesize value = _value;
-//
-//-(id)init
-//{
-//	if((self = [super init])){
-//		[self addChild:[CCSprite spriteWithFile:@"Button"]];
-//		self.isTouchEnabled = TRUE;
-//	}
-//	
-//	return self;
-//}
-//
-//static const CGFloat MASH_RADIUS = 50.0;
-//
-//-(BOOL)updateValueForTouch:(UITouch *)touch
-//{
-//	return (_value = (ccpLengthSQ([self convertTouchToNodeSpace:touch]) < MASH_RADIUS*MASH_RADIUS));
-//}
-//
-//-(BOOL)ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event
-//{
-//	return [self updateValueForTouch:touch];
-//}
-//
-//-(void)ccTouchMoved:(UITouch *)touch withEvent:(UIEvent *)event
-//{
-//	[self updateValueForTouch:touch];
-//}
-//
-//-(void)ccTouchEnded:(UITouch *)touch withEvent:(UIEvent *)event
-//{
-//	_value = FALSE;
-//}
-//
-//-(void)ccTouchCancelled:(UITouch *)touch withEvent:(UIEvent *)event
-//{
-//	return [self ccTouchEnded:touch withEvent:event];
-//}
-//
-//@end
-
-
 @interface SpacePatrolLayer()
 
 @end
@@ -146,7 +95,7 @@ enum Z_ORDER {
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:32.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
 		
-		buggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, terrain.sampler.height*terrain.texelSize/3.0)];
+		buggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, 0.3*terrain.height)];
 		[world addChild:buggy.node z:Z_BUGGY];
 		[space add:buggy];
 		

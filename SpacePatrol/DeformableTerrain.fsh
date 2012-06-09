@@ -19,6 +19,8 @@
  * SOFTWARE.
  */
 
+//#extension GL_OES_standard_derivatives : enable
+
 varying mediump vec2 frag_sky_texcoord;
 varying mediump vec2 frag_parallax_texcoord;
 
@@ -46,5 +48,6 @@ void main()
 	lowp vec4 mix_color = texture2D(mix_texture, vec2(density, crust));
 	lowp vec4 terrain_color = texture2D(terrain_texture, frag_terrain_texcoord);
 	
+//	mix_color = smoothstep(0.5, 0.5*fwidth(mix_color) + 0.5, mix_color);
 	gl_FragColor = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
 }
