@@ -67,7 +67,7 @@ enum {
 		_body = [ChipmunkBody bodyWithMass:WHEEL_MASS andMoment:cpMomentForCircle(WHEEL_MASS, 0.0, radius, cpvzero)];
 		
 		ChipmunkShape *shape = [ChipmunkCircleShape circleWithBody:_body radius:radius offset:cpvzero];
-		shape.friction = 1.0;
+		shape.friction = 1.5;
 		shape.group = PhysicsIdentifier(BUGGY);
 		shape.layers = COLLISION_LAYERS_BUGGY;
 		
@@ -88,6 +88,8 @@ enum {
 {
 	if((self = [super init])){
 		CCSprite *sprite = [CCSprite spriteWithFile:@"Chassis.png"];
+		CGPoint anchor = cpvadd(sprite.anchorPointInPoints, COG_ADJUSTMENT);
+		sprite.anchorPoint = ccp(anchor.x/sprite.contentSize.width, anchor.y/sprite.contentSize.height);
 		_node = sprite;
 		
 		NSURL *url = [[NSBundle mainBundle] URLForResource:@"ChassisOutline" withExtension:@"png"];
@@ -142,7 +144,7 @@ enum {
 		_node = [CCNode node];
 		
 		_chassis = [[SpaceBuggyChassis alloc] init];
-		_chassis.body.pos = pos;
+		_chassis.body.pos = cpvadd(pos, COG_ADJUSTMENT);
 		[_node addChild:_chassis.node z:Z_CHASSIS];
 		
 		_frontWheel = [[SpaceBuggyWheel alloc] init];
@@ -173,7 +175,7 @@ enum {
 			cpVect front_anchor = [chassis world2local:front.pos];
 			ChipmunkConstraint *frontSpring = [ChipmunkDampedSpring dampedSpringWithBodyA:chassis bodyB:front anchr1:front_anchor anchr2:cpvzero restLength:0.0 stiffness:FRONT_SPRING damping:FRONT_DAMPING];
 			
-			_rearJoint = [ChipmunkPinJoint pinJointWithBodyA:chassis bodyB:rear anchr1:cpv(-14, -8) anchr2:cpvzero];
+			_rearJoint = [ChipmunkPinJoint pinJointWithBodyA:chassis bodyB:rear anchr1:cpvsub(cpv(-14, -8), COG_ADJUSTMENT) anchr2:cpvzero];
 			_rearStrutRestAngle = [self rearStrutAngle];
 			
 			cpVect rear_anchor = [chassis world2local:rear.pos];
@@ -221,7 +223,7 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 -(void)update:(ccTime)dt throttle:(int)throttle;
 {
 	if(throttle > 0){
-		_motor.maxForce = cpfclamp01(1.0 - (_rearWheel.body.angVel - _chassis.body.angVel)/ENGINE_MAX_W)*ENGINE_MAX_TORQUE;
+		_motor.maxForce = cpfclamp01(1.0 - (_chassis.body.angVel - _rearWheel.body.angVel)/ENGINE_MAX_W)*ENGINE_MAX_TORQUE;
 		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
 	} else if(throttle < 0){
 		_motor.maxForce = 0.0;

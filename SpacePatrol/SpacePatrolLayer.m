@@ -153,7 +153,7 @@ enum Z_ORDER {
 		// Add a ChipmunkDebugNode to draw the space.
 		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
 		[world addChild:debugNode z:Z_DEBUG];
-		debugNode.visible = TRUE;
+		debugNode.visible = FALSE;
 		
 		// Show some menu buttons.
 		CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){
