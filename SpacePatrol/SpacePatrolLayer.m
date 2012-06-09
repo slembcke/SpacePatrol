@@ -90,7 +90,12 @@ enum Z_ORDER {
 		space = [[ChipmunkSpace alloc] init];
 		space.gravity = cpv(0.0f, -GRAVITY);
 		
-		multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e5];
+		multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
+		multiGrab.grabRadius = 50.0;
+//		multiGrab.pushMode = TRUE;
+//		multiGrab.pushMass = 10.0;
+//		multiGrab.pushFriction = 0.7;
+//		multiGrab.layers = COLLISION_RULE_BUGGY_ONLY;
 		
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:32.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
@@ -172,22 +177,30 @@ cpBBFromCGRect(CGRect rect)
 
 -(void)modifyTerrain
 {
-	CGFloat radius = 150.0;
+	CGFloat radius = 100.0;
 	CGFloat threshold = 0.05*radius;
 	
-	if(currentTouch){
-		CGPoint location = [self touchLocation:currentTouch];
+	CGPoint location = [self touchLocation:currentTouch];
+	
+	if(
+		ccpDistanceSQ(location, lastTouchLocation) > threshold*threshold &&
+		(currentTouchRemoves || ![space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape)
+	){
+//		if(!currentTouchRemoves){
+//			ChipmunkNearestPointQueryInfo *info = [space nearestPointQueryNearest:location maxDistance:radius layers:COLLISION_RULE_BUGGY_ONLY group:nil];
+//			if(info.shape){
+//				location = cpvadd(info.point, cpvmult(cpvnormalize(cpvsub(location, info.point)), radius));
+//			}
+//		}
 		
-		if(ccpDistanceSQ(location, lastTouchLocation) > threshold*threshold){
-			[terrain modifyTerrainAt:location radius:radius remove:currentTouchRemoves];
-			lastTouchLocation = location;
-		}
+		[terrain modifyTerrainAt:location radius:radius remove:currentTouchRemoves];
+		lastTouchLocation = location;
 	}
 }
 
 -(void)update:(ccTime)dt
 {
-	[self modifyTerrain];
+	if(currentTouch) [self modifyTerrain];
 	
 	CGAffineTransform trans = CGAffineTransformInvert([terrain nodeToWorldTransform]);
 	CGRect screen = CGRectMake(-100, -100, 680, 520);
@@ -210,7 +223,10 @@ cpBBFromCGRect(CGRect rect)
 		_fixedTime += fixed_dt;
 	}
 	
-	world.position = cpvsub(cpv(240, 160), buggy.pos);
+	if(multiGrab.grabCount == 0){
+		// TODO Should smooth this out better.
+		world.position = cpvsub(cpv(240, 160), buggy.pos);
+	}
 }
 
 -(void)scheduleBlockOnce:(void (^)(void))block delay:(ccTime)delay
@@ -221,35 +237,69 @@ cpBBFromCGRect(CGRect rect)
 
 //-(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 //{
-//	currentTouch = touches.anyObject;
-//	
-//	cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
-//	currentTouchRemoves = (density < 0.5);
+//	for(UITouch *touch in touches){
+//		if(!currentTouch){
+//			currentTouch = touch;
+//			
+//			cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
+//			currentTouchRemoves = (density < 0.5);
+//		}
+//	}
 //}
 //
 //-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 //{
-//	currentTouch = nil;
+//	for(UITouch *touch in touches){
+//		if(touch == currentTouch){
+//			currentTouch = nil;
+//		}
+//	}
 //}
-
-//-(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+//
+//-(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 //{
-//	[buggy adjust:[terrain convertTouchToNodeSpace:touches.anyObject]];
+//	[self ccTouchesEnded:touches withEvent:event];
 //}
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[multiGrab beginLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
+	for(UITouch *touch in touches){
+		[multiGrab beginLocation:[terrain convertTouchToNodeSpace:touch]];
+		NSLog(@"multiGrabBegin %p", touch);
+		
+		if(!currentTouch){
+			NSLog(@"deformTouchBegin %p", touch);
+			currentTouch = touch;
+			
+			cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
+			currentTouchRemoves = (density < 0.5);
+		}
+	}
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[multiGrab updateLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
+	for(UITouch *touch in touches){
+		[multiGrab updateLocation:[terrain convertTouchToNodeSpace:touch]];
+	}
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[multiGrab endLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
+	for(UITouch *touch in touches){
+		NSLog(@"multiGrabEnd %p", touch);
+		[multiGrab endLocation:[terrain convertTouchToNodeSpace:touch]];
+		
+		if(touch == currentTouch){
+			NSLog(@"deformTouchEnd %p", touch);
+			currentTouch = nil;
+		}
+	}
+}
+
+-(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	[self ccTouchesEnded:touches withEvent:event];
 }
 
 @end

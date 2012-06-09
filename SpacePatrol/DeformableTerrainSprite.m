@@ -20,6 +20,7 @@
  */
 
 #import "DeformableTerrainSprite.h"
+#import "Physics.h"
 
 #import "HMVectorNode.h"
 
@@ -85,6 +86,7 @@ typedef struct Vertex {
 		_tileSize = tileSize;
 		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:_tileSize*_texelScale samplesPerTile:_tileSize + 1 cacheSize:256];
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);
+		_tiles.segmentLayers = COLLISION_LAYERS_TERRAIN;
 		_tiles.segmentRadius = 5.0;
 		_tiles.simplifyThreshold = 2.0;
 		

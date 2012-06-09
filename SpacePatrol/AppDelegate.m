@@ -44,7 +44,7 @@
 							   numberOfSamples:0];
 	
 	// Enable multitouch
-	[glView setMultipleTouchEnabled:FALSE];
+	[glView setMultipleTouchEnabled:TRUE];
 	 
 	director_ = (CCDirectorIOS*) [CCDirector sharedDirector];
 	

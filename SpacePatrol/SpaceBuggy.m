@@ -25,8 +25,8 @@
 #import "Physics.h"
 
 enum {
-	Z_WHEEL,
 	Z_CHASSIS,
+	Z_WHEEL,
 	Z_STRUT,
 };
 
@@ -62,14 +62,14 @@ enum {
 		CCSprite *sprite = [CCSprite spriteWithFile:@"Wheel.png"];
 		_node = sprite;
 		
-		cpFloat mass = 1.0;
 		cpFloat radius = 0.95*sprite.contentSize.width/2.0;
 		
-		_body = [ChipmunkBody bodyWithMass:mass andMoment:cpMomentForCircle(mass, 0.0, radius, cpvzero)];
+		_body = [ChipmunkBody bodyWithMass:WHEEL_MASS andMoment:cpMomentForCircle(WHEEL_MASS, 0.0, radius, cpvzero)];
 		
 		ChipmunkShape *shape = [ChipmunkCircleShape circleWithBody:_body radius:radius offset:cpvzero];
 		shape.friction = 1.0;
 		shape.group = PhysicsIdentifier(BUGGY);
+		shape.layers = COLLISION_LAYERS_BUGGY;
 		
 		self.chipmunkObjects = [NSArray arrayWithObjects:_body, shape, nil];
 	}
@@ -98,14 +98,13 @@ enum {
 		
 		NSAssert(lines.count == 1 && line.area > 0.0, @"Degenerate image hull.");
 		
-		cpFloat mass = 1.0;
-		
-		_body = [ChipmunkBody bodyWithMass:mass andMoment:[line momentForMass:mass offset:cpvneg(sprite.anchorPointInPoints)]];
+		_body = [ChipmunkBody bodyWithMass:CHASSIS_MASS andMoment:[line momentForMass:CHASSIS_MASS offset:cpvneg(sprite.anchorPointInPoints)]];
 		
 		ChipmunkPolyline *hull = [[line simplifyCurves:1.0] toConvexHull:1.0];
 		ChipmunkShape *shape = [hull asChipmunkPolyShapeWithBody:_body offset:cpvneg(sprite.anchorPointInPoints)];
 		shape.friction = 0.3;
 		shape.group = PhysicsIdentifier(BUGGY);
+		shape.layers = COLLISION_LAYERS_BUGGY;
 		
 		self.chipmunkObjects = [NSArray arrayWithObjects:_body, shape, nil];
 	}
@@ -125,9 +124,15 @@ enum {
 	
 	ChipmunkGrooveJoint *_frontJoint;
 	ChipmunkPinJoint *_rearJoint;
+	cpFloat _rearStrutRestAngle;
 }
 
 @synthesize chipmunkObjects = _chipmunkObjects, node = _node;
+
+-(cpFloat)rearStrutAngle
+{
+	return cpvtoangle(cpvsub([_chassis.body local2world:_rearJoint.anchr1], _rearWheel.body.pos));
+}
 
 -(id)initWithPosition:(cpVect)pos
 {
@@ -155,13 +160,27 @@ enum {
 		_rearStrut.anchorPoint = ccp(0.025, 0.2);
 		[_node addChild:_rearStrut z:Z_STRUT];
 		
-		cpVect grv_a = [_chassis.body world2local:_frontWheel.body.pos];
-		cpVect grv_b = cpvadd(grv_a, cpvmult(cpv(-1.0, 1.0), 7.0));
-		_frontJoint = [ChipmunkGrooveJoint grooveJointWithBodyA:_chassis.body bodyB:_frontWheel.body groove_a:grv_a groove_b:grv_b anchr2:cpvzero];
-		
-		_rearJoint = [ChipmunkPinJoint pinJointWithBodyA:_chassis.body bodyB:_rearWheel.body anchr1:cpv(-14, -8) anchr2:cpvzero];
-		
-		_chipmunkObjects = [NSArray arrayWithObjects:_chassis, _frontWheel, _rearWheel, _frontJoint, _rearJoint, nil];
+		{
+			ChipmunkBody *chassis = _chassis.body;
+			ChipmunkBody *front = _frontWheel.body;
+			ChipmunkBody *rear = _rearWheel.body;
+			
+			cpVect grv_a = [chassis world2local:front.pos];
+			cpVect grv_b = cpvadd(grv_a, cpvmult(cpv(-1.0, 1.0), 7.0));
+			_frontJoint = [ChipmunkGrooveJoint grooveJointWithBodyA:chassis bodyB:front groove_a:grv_a groove_b:grv_b anchr2:cpvzero];
+			
+			cpVect front_anchor = [chassis world2local:front.pos];
+			ChipmunkConstraint *frontSpring = [ChipmunkDampedSpring dampedSpringWithBodyA:chassis bodyB:front anchr1:front_anchor anchr2:cpvzero restLength:0.0 stiffness:FRONT_SPRING damping:FRONT_DAMPING];
+			
+			_rearJoint = [ChipmunkPinJoint pinJointWithBodyA:chassis bodyB:rear anchr1:cpv(-14, -8) anchr2:cpvzero];
+			_rearStrutRestAngle = [self rearStrutAngle];
+			
+			cpVect rear_anchor = [chassis world2local:rear.pos];
+			ChipmunkConstraint *rearSpring = [ChipmunkDampedSpring dampedSpringWithBodyA:chassis bodyB:rear anchr1:rear_anchor anchr2:cpvzero restLength:0.0 stiffness:REAR_SPRING damping:REAR_DAMPING];
+			ChipmunkConstraint *rearStrutLimit = [ChipmunkSlideJoint slideJointWithBodyA:chassis bodyB:rear anchr1:rear_anchor anchr2:cpvzero min:0.0 max:20.0];
+			
+			_chipmunkObjects = [NSArray arrayWithObjects:_chassis, _frontWheel, _rearWheel, _frontJoint, frontSpring, _rearJoint, rearSpring, rearStrutLimit, nil];
+		}
 	}
 	
 	return self;
@@ -173,6 +192,13 @@ ClosetPointOnSegment(const cpVect p, const cpVect a, const cpVect b)
 	cpVect delta = cpvsub(a, b);
 	cpFloat t = cpfclamp01(cpvdot(delta, cpvsub(p, b))/cpvlengthsq(delta));
 	return cpvadd(b, cpvmult(delta, t));
+}
+
+static inline cpVect
+ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
+{
+	cpVect n = cpvnormalize(cpvsub(p, anchor));
+	return cpvadd(anchor, cpvmult(n, dist));
 }
 
 -(void)update:(ccTime)dt
@@ -192,12 +218,11 @@ ClosetPointOnSegment(const cpVect p, const cpVect a, const cpVect b)
 	_frontStrut.position = _frontWheel.node.position;
 	_frontStrut.rotation = _chassis.node.rotation;
 	
-	_rearWheel.node.position = _rearWheel.body.pos;
+	_rearWheel.node.position = ProjectFromPoint(_rearWheel.body.pos, [_chassis.body local2world:_rearJoint.anchr1], _rearJoint.dist);
 	_rearWheel.node.rotation = -CC_RADIANS_TO_DEGREES(_rearWheel.body.angle);
 	
-	
 	_rearStrut.position = _rearWheel.node.position;
-	_rearStrut.rotation = _chassis.node.rotation;
+	_rearStrut.rotation = -CC_RADIANS_TO_DEGREES([self rearStrutAngle] - _rearStrutRestAngle);
 }
 
 -(cpVect)pos
@@ -208,11 +233,6 @@ ClosetPointOnSegment(const cpVect p, const cpVect a, const cpVect b)
 -(void)unschedule
 {
 	[_node.scheduler unscheduleAllSelectorsForTarget:self];
-}
-
--(void)adjust:(cpVect)pos
-{
-	NSLog(@"%@", NSStringFromCGPoint(pos));
 }
 
 @end

@@ -187,12 +187,12 @@ __attribute__((__deprecated__));
 - (void)addPostStepCallback:(id)target selector:(SEL)selector key:(id)key;
 
 /// Block type used with [ChipmunkSpace addPostStepBlock:]
-typedef void (^ChipmunkPostStepBlock)();
+typedef void (^ChipmunkPostStepBlock)(void);
 
 /// Same as [ChipmunkSpace addPostStepCallback:] but with a block. The block is copied.
 - (void)addPostStepBlock:(ChipmunkPostStepBlock)block key:(id)key;
 
-/// Add the Chipmunk Object from the space at the end of the step.
+/// Add the Chipmunk Object to the space at the end of the step.
 - (void)addPostStepAddition:(id <ChipmunkObject>)obj;
 
 /// Remove the Chipmunk Object from the space at the end of the step.

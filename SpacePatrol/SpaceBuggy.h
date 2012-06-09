@@ -35,6 +35,4 @@
 
 -(void)unschedule;
 
--(void)adjust:(cpVect)pos;
-
 @end

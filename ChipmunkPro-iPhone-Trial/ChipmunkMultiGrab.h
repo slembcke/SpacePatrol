@@ -56,7 +56,9 @@
 @property(nonatomic, assign) cpFloat pushMass;
 @property(nonatomic, assign) cpFloat pushFriction;
 @property(nonatomic, assign) cpFloat pushElasticity;
-@property(nonatomic, assign) id pushCollisionType;
+@property(nonatomic, assign) cpCollisionType pushCollisionType;
+
+@property(nonatomic, readonly) NSUInteger grabCount;
 
 
 /**

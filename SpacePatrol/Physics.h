@@ -29,13 +29,20 @@
 
 // Create some collision rules for fancy layer based filtering.
 // There is more information about how this works in the Chipmunk docs.
-#define COLLISION_RULE_TERRAIN_BOX (1<<0)
-#define COLLISION_RULE_TERRAIN_MISSILE (1<<1)
-#define COLLISION_RULE_BOX_ONLY (1<<2)
+#define COLLISION_RULE_TERRAIN_BUGGY (1<<0)
+#define COLLISION_RULE_BUGGY_ONLY (1<<1)
 
 // Bitwise or the rules together to get the layers for a certain shape type.
-#define COLLISION_LAYERS_TERRAIN (COLLISION_RULE_TERRAIN_BOX | COLLISION_RULE_TERRAIN_MISSILE)
-#define COLLISION_LAYERS_MISSILE (COLLISION_RULE_TERRAIN_MISSILE)
-#define COLLISION_LAYERS_BOX (COLLISION_RULE_TERRAIN_BOX | COLLISION_RULE_BOX_ONLY)
+#define COLLISION_LAYERS_TERRAIN (COLLISION_RULE_TERRAIN_BUGGY)
+#define COLLISION_LAYERS_BUGGY (COLLISION_RULE_TERRAIN_BUGGY | COLLISION_RULE_BUGGY_ONLY)
 
-#define GRAVITY 0.0 //800.0f
+#define GRAVITY 800.0f
+
+#define WHEEL_MASS 0.25
+#define CHASSIS_MASS 1.0
+
+#define FRONT_SPRING 150.0
+#define FRONT_DAMPING 3.0
+
+#define REAR_SPRING 100.0
+#define REAR_DAMPING 3.0
