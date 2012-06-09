@@ -1,30 +1,44 @@
-TODO replace image and video
-p=. !http://files.slembcke.net/upshot/upshot_CloudBomber.png!
+p=. !http://files.slembcke.net/upshot/upshot_SpacePatrol.png!
 
-"YouTube Video":http://www.youtube.com/watch?v=bAEBqjc8xwU
+"YouTube Video":http://www.youtube.com/watch?v=rb49mke8K2k
 
-h1. SpacePatrol
+h1. Space Patrol
 
-TODO goofy description
+You are a Super Space Ranger with an awesome space buggy. Fortunately you've landed on a really sweet planet with deformable terrain (Wait... what?). You can catch some sweet air or dig around through the ground. You can do whatever you want because you are a Super Space Ranger. Who could stop you anyway?
+
+This isn't really a game per-se, so the controls are a bit of a mashup:
+* Drive the car using the buttons.
+* Drag the car around with your finger.
+* Pull up or down on the terrain to change it.
 
 h2. Overview:
 
-This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how simple it can be to mix Chipmunk Pro's autogeometry to implement deformable terrain with Cocos2D. It implements a single screen game that uses the same Cocos2D rendering code that renders the screen to generate the Chipmunk geometry. While very simple and easy, transfering pixels from the GPU to the CPU is a little slow. Performance is not a major focus of this demo over simplicity. However, the cost of regenerating all the geometry only takes a couple dozen milliseconds. This method would work perfect for generating static level geometry at runtime or an occasional terrain deformation such as in a Scorched Earth clone.
+This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how to mix Chipmunk Pro's autogeometry to implement very large scale, real-time deformable terrain with Cocos2D 2.0. Unlike the Cloud Bomber example, which deformed the terrain bitmap on the GPU and paid a high syncronization cost to read it back, Space Patrol deforms the bitmap using a CGBitmapContext and then uploads only the changed pixels back to the GPU.
 
-This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how to do large scale, high performance terrain using CGBitmapContexts and rendering it with GLES 2.0 and Cocos2D 2.0. The terrain is backed by a huge 2048x512 bitmap upsampled to a 8192x2048 world. While more complicated than the CloudBomber project, the performance is much better.
+The terrain density texture is 2048x512 (You could go as high as 2048x2048 though). When rendering, this is upscaled by 16x (32x on retina) giving you a fully deformable world that is over 130 screen widths wide. Rendering the world is performed by a shader that renders all of the following in a single pass:
+* A textured sky (Currently somewhat wased on a simple gradient)
+* A parallax background
+* A textured terrain layer
+* A layer of crust along the terrain's contour
+
+Because this all happens in a single draw pass without blending to the framebuffer, it's very fast and can even run at 60fps on an iPhone 4. Another benefit of rendering the entire terrain using a fragment shader is that the terrain can be smoothly morphed without having chunky geometry changes. You can see the effect of this in the video above. It basically looks awesome. :D
 
 h2. How it works:
 
-Chipmunk Pro allows you to trace images (or procedural functions) to turn them into geometry. For Objective-C, it comes with a few handy wrapper classes that make this easy to do.
+Chipmunk Pro allows you to trace images (or procedural functions) to turn them into geometry. For Objective-C, it comes with a few handy wrapper classes that make this easy to do. On of them, ChipmunkCGContextSampler, links the autogeometry to a CGBitmapContext. In this way you can perform high-quality, CPU side rendering of the terrain deformations.
 
-TODO finish
+Then the ChipmunkCGContextSampler is linked up with a tile cache that breaks the world up into tiles. The geometry for a tile only needs to be regerated if it is onscreen (or some other rect you specify) and it's pixels have been modified. This means you don't need to waste CPU time or memory to process geometry that isn't onscreen.
 
-h2. What's included:
+After drawing terrain deformations into the CGBitmapContext, it marks the drawn areas as dirty rects in the tile cache. It also uploads those dirty rects to the terrain density texture at this point too. This is unfortunately a little slow, making the framerate a little jump when constantly deforming the terrain, but I don't think there is much that can be done about that.
 
-A number of handy utility classes you can use in your own code:
-* ChipmunkSprite: Automatically synchronize Chipmunk bodies to Cocos2D sprites.
-* ChipmunkDebugNode: An simple node for rendering Chipmunk collision shapes and constraints.
-* HMVectorNode: A node that provides immediate mode rendering of high quality, anti-aliased primitives. ChipmunkDebugNode is built on top of it.
-* imageconvert/retinaconvert: Utility programs I've made and use that allow you to generate .png files from Photoshop source files without needing to re-export them by hand every time you build.
+The terrain shader uses the value from the terrain density texture as a threshold to decide whether to draw terrain or the parallax background. If the density was used directly as the alpha, this would look terrible as it is somewhat blurry and upscaled by a huge amount. I used a lookup texture to get a nice threshold for the terrain as well as the thickness of the crust on top. The threshold is perturbed by a second texture to make the crust look more interesting.
 
-TODO finish
+
+h2. Enhancements:
+
+There are a few things that could be enhanced in the demo, but I didn't want to waste too much time on it. Maybe I'll come back around and do them later...
+* Because the terrain is drawn using a single gigantic quad, the precision of the texture samplers runs out about halfway across the world. This effectively halves the texture resolution. It could be fixed easily enough by splitting the quad into multiple pieces though.
+* The quality of the anti-aliasing of the crust layer could be improved using a higher resolution mixing texture and/or using derivatives in the fragment shader (I left the latter commented out in the shader). The iPhone 4 doesn't have enough GPU horsepower to handle this though. You'd want to enable these only if the user has an iPhone 4s/iPad 2 or better.
+* Particle effects: Kick up dust and throw dirt from the wheels.
+* Motor noises or other sounds.
+* 

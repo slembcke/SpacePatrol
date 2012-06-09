@@ -67,7 +67,7 @@
 	director_.wantsFullScreenLayout = YES;
 	
 	// Display FSP and SPF
-	[director_ setDisplayStats:TRUE];
+	[director_ setDisplayStats:FALSE];
 	
 	// set FPS at 60
 	[director_ setAnimationInterval:1.0/60];
@@ -100,7 +100,7 @@
 	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
 		director_->winSizeInPoints_ = CGSizeMake(512, 384);
 		director_->winSizeInPixels_ = CGSizeMake(1024, 768);
-		__ccContentScaleFactor = 2;
+		__ccContentScaleFactor *= 2;
 		
 		[director_ createStatsLabel];
 	}
