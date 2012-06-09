@@ -24,7 +24,9 @@
 #import "SpacePatrolLayer.h"
 #import "ChipmunkAutoGeometry.h"
 #import "ChipmunkDebugNode.h"
+
 #import "DeformableTerrainSprite.h"
+#import "SpaceBuggy.h"
 
 #import "Physics.h"
 
@@ -37,9 +39,7 @@ static const ccColor4B SKY_COLOR = {30, 66, 78, 255};
 enum Z_ORDER {
 	Z_WORLD,
 	Z_TERRAIN,
-	Z_CRATES,
-	Z_MISSILE,
-	Z_CLOUD,
+	Z_BUGGY,
 	Z_EFFECTS,
 	Z_DEBUG,
 	Z_MENU,
@@ -57,6 +57,7 @@ enum Z_ORDER {
 @implementation SpacePatrolLayer {
 	CMMotionManager *motionManager;
 	ChipmunkSpace *space;
+	ChipmunkMultiGrab *multiGrab;
 	ChipmunkDebugNode *debugNode;
 	
 	CCNode *world;
@@ -66,7 +67,7 @@ enum Z_ORDER {
 	BOOL currentTouchRemoves;
 	CGPoint lastTouchLocation;
 	
-	ChipmunkBody *body;
+	SpaceBuggy *buggy;
 	
 	ccTime _accumulator, _fixedTime;
 }
@@ -89,23 +90,19 @@ enum Z_ORDER {
 		space = [[ChipmunkSpace alloc] init];
 		space.gravity = cpv(0.0f, -GRAVITY);
 		
+		multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e5];
+		
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:32.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
 		
-		cpFloat mass = 1.0;
-		cpFloat radius = 30.0;
-		body = [space add:[ChipmunkBody bodyWithMass:mass andMoment:cpMomentForCircle(mass, 0.0, radius, cpvzero)]];
-		body.pos = cpv(2.0*radius, terrain.sampler.height*terrain.texelSize/3.0);
-		
-		ChipmunkShape *shape = [space add:[ChipmunkCircleShape circleWithBody:body radius:radius offset:cpvzero]];
-		shape.friction = 1.0;
-		
-//		[space add:[ChipmunkSimpleMotor simpleMotorWithBodyA:space.staticBody bodyB:body rate:10.0]];
+		buggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, terrain.sampler.height*terrain.texelSize/3.0)];
+		[world addChild:buggy.node z:Z_BUGGY];
+		[space add:buggy];
 		
 		// Add a ChipmunkDebugNode to draw the space.
 		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
 		[world addChild:debugNode z:Z_DEBUG];
-		debugNode.visible = FALSE;
+		debugNode.visible = TRUE;
 		
 		// Show some menu buttons.
 		CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){
@@ -213,7 +210,7 @@ cpBBFromCGRect(CGRect rect)
 		_fixedTime += fixed_dt;
 	}
 	
-	world.position = cpvsub(cpv(240, 160), body.pos);
+	world.position = cpvsub(cpv(240, 160), buggy.pos);
 }
 
 -(void)scheduleBlockOnce:(void (^)(void))block delay:(ccTime)delay
@@ -222,17 +219,37 @@ cpBBFromCGRect(CGRect rect)
 	[self.scheduler scheduleSelector:@selector(invoke) forTarget:[block copy] interval:0.0 paused:FALSE repeat:1 delay:delay];
 }
 
+//-(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+//{
+//	currentTouch = touches.anyObject;
+//	
+//	cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
+//	currentTouchRemoves = (density < 0.5);
+//}
+//
+//-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+//{
+//	currentTouch = nil;
+//}
+
+//-(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+//{
+//	[buggy adjust:[terrain convertTouchToNodeSpace:touches.anyObject]];
+//}
+
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	currentTouch = touches.anyObject;
-	
-	cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
-	currentTouchRemoves = (density < 0.5);
+	[multiGrab beginLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
+}
+
+-(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	[multiGrab updateLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	currentTouch = nil;
+	[multiGrab endLocation:[terrain convertTouchToNodeSpace:touches.anyObject]];
 }
 
 @end

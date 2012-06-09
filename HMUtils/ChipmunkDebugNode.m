@@ -93,7 +93,7 @@ DrawConstraint(cpConstraint *constraint, HMVectorNode *renderer)
 		cpPinJoint *joint = (cpPinJoint *)constraint;
 		
 		cpVect a = cpBodyLocal2World(body_a, joint->anchr1);
-		cpVect b = cpBodyLocal2World(body_b, joint->anchr1);
+		cpVect b = cpBodyLocal2World(body_b, joint->anchr2);
 		
 		[renderer drawDot:a radius:3.0 color:CONSTRAINT_COLOR];
 		[renderer drawDot:b radius:3.0 color:CONSTRAINT_COLOR];
@@ -102,7 +102,7 @@ DrawConstraint(cpConstraint *constraint, HMVectorNode *renderer)
 		cpSlideJoint *joint = (cpSlideJoint *)constraint;
 
 		cpVect a = cpBodyLocal2World(body_a, joint->anchr1);
-		cpVect b = cpBodyLocal2World(body_b, joint->anchr1);
+		cpVect b = cpBodyLocal2World(body_b, joint->anchr2);
 
 		[renderer drawDot:a radius:3.0 color:CONSTRAINT_COLOR];
 		[renderer drawDot:b radius:3.0 color:CONSTRAINT_COLOR];
@@ -111,7 +111,7 @@ DrawConstraint(cpConstraint *constraint, HMVectorNode *renderer)
 		cpPivotJoint *joint = (cpPivotJoint *)constraint;
 
 		cpVect a = cpBodyLocal2World(body_a, joint->anchr1);
-		cpVect b = cpBodyLocal2World(body_b, joint->anchr1);
+		cpVect b = cpBodyLocal2World(body_b, joint->anchr2);
 
 		[renderer drawDot:a radius:3.0 color:CONSTRAINT_COLOR];
 		[renderer drawDot:b radius:3.0 color:CONSTRAINT_COLOR];

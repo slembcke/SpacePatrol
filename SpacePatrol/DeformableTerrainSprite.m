@@ -142,7 +142,6 @@ typedef struct Vertex {
 		glUniform1f(glGetUniformLocation(shader->program_, "parallax_speed"), 1.0/10000.0);
 		glUniform1f(glGetUniformLocation(shader->program_, "parallax_offset"), 0.5);
 		
-//		glUniform4f(glGetUniformLocation(shader->program_, "sky_color"), 30.0/255.0, 66.0/255.0, 78.0/255.0, 1.0);
 		glUniform4f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0, 1.0);
 		
 		glUniform1i(glGetUniformLocation(shader->program_, "density_texture"), 0);
@@ -182,9 +181,6 @@ typedef struct Vertex {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, crust_texcoord));
 		
     glBindVertexArrayOES(0);
-		
-//		_debugNode = [HMVectorNode node];
-//		[self addChild:_debugNode z:1000];
 		
 		PRINT_GL_ERRORS();
 	}

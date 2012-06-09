@@ -19,31 +19,22 @@
  * SOFTWARE.
  */
 
-uniform highp vec2 parallax_scale;
-uniform highp float parallax_speed;
-uniform highp float parallax_offset;
+#import "cocos2d.h"
+#import "ObjectiveChipmunk.h"
+#import "ChipmunkSprite.h"
 
-attribute highp vec2 position;
-attribute mediump vec2 density_texcoord;
-attribute mediump vec2 texcoord;
 
-varying mediump vec2 frag_sky_texcoord;
-varying mediump vec2 frag_parallax_texcoord;
+@interface SpaceBuggy : NSObject<ChipmunkObject>
 
-varying mediump vec2 frag_density_texcoord;
-varying mediump vec2 frag_terrain_texcoord;
+@property(nonatomic, readonly) cpVect pos;
 
-uniform mat4 u_MVPMatrix;
+@property(nonatomic, retain) NSArray *chipmunkObjects;
+@property(nonatomic, retain) CCNode *node;
 
-void main()
-{
-	highp vec4 clip_space = u_MVPMatrix*vec4(position, 0, 1);
-	gl_Position = clip_space;
-	
-	mediump vec2 texture_space = (-0.5*clip_space + 0.5).xy;
-	frag_sky_texcoord = texture_space;
-	frag_parallax_texcoord = parallax_scale*(texture_space - position*parallax_speed + vec2(0.0, parallax_offset));
-	
-	frag_density_texcoord = density_texcoord;
-	frag_terrain_texcoord = texcoord;
-}
+-(id)initWithPosition:(cpVect)pos;
+
+-(void)unschedule;
+
+-(void)adjust:(cpVect)pos;
+
+@end

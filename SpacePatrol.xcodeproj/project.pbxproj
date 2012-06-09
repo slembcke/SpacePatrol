@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */; };
+		D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D351A41C1580112900F74BF1 /* Crust.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A4191580112900F74BF1 /* Crust.png */; };
 		D351A43E15814B7500F74BF1 /* Sky.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A43C15814B7500F74BF1 /* Sky.psd */; };
 		D351A44415814E7E00F74BF1 /* TerrainDetail.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A44315814E7E00F74BF1 /* TerrainDetail.psd */; };
 		D351A446158152AC00F74BF1 /* Parallax.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A445158152AC00F74BF1 /* Parallax.psd */; };
 		D351A459158266D200F74BF1 /* Mound.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A458158266D200F74BF1 /* Mound.png */; };
+		D351A45E1582A85200F74BF1 /* Chassis.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A45A1582A85100F74BF1 /* Chassis.psd */; };
+		D351A45F1582A85200F74BF1 /* FrontStrut.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A45B1582A85100F74BF1 /* FrontStrut.psd */; };
+		D351A4601582A85200F74BF1 /* RearStrut.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A45C1582A85100F74BF1 /* RearStrut.psd */; };
+		D351A4611582A85200F74BF1 /* Wheel.psd in Resources */ = {isa = PBXBuildFile; fileRef = D351A45D1582A85100F74BF1 /* Wheel.psd */; };
+		D351A4641582A87A00F74BF1 /* SpaceBuggy.m in Sources */ = {isa = PBXBuildFile; fileRef = D351A4631582A87A00F74BF1 /* SpaceBuggy.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D352333F1580F27A00466A06 /* TerrainMix.png in Resources */ = {isa = PBXBuildFile; fileRef = D352333E1580F27A00466A06 /* TerrainMix.png */; };
 		D37893EB15769BCD006CBEE8 /* libChipmunkPro-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893E915769BCD006CBEE8 /* libChipmunkPro-iPhone.a */; };
 		D37893ED15769BFD006CBEE8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893EC15769BFD006CBEE8 /* ImageIO.framework */; };
@@ -170,6 +175,7 @@
 		D3AAFDE0156F32F000C67169 /* HMVectorNode.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D3AAFDD5156F2BB700C67169 /* HMVectorNode.fsh */; };
 		D3AAFDE1156F32F000C67169 /* HMVectorNode.vsh in Resources */ = {isa = PBXBuildFile; fileRef = D3AAFDD6156F2BB700C67169 /* HMVectorNode.vsh */; };
 		D3E5E4AE157851E40096C8B0 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */; };
+		D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */; };
 		D3F6F025157013B200A158A8 /* ChipmunkDebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F6F024157013B200A158A8 /* ChipmunkDebugNode.m */; };
 		D3F8E004157D755000457513 /* Terrain.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F8E003157D755000457513 /* Terrain.png */; };
 		D3F8E011157EAD8700457513 /* DeformableTerrainSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F8E010157EAD8700457513 /* DeformableTerrainSprite.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -199,6 +205,12 @@
 		D351A44315814E7E00F74BF1 /* TerrainDetail.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TerrainDetail.psd; sourceTree = "<group>"; };
 		D351A445158152AC00F74BF1 /* Parallax.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Parallax.psd; sourceTree = "<group>"; };
 		D351A458158266D200F74BF1 /* Mound.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Mound.png; sourceTree = "<group>"; };
+		D351A45A1582A85100F74BF1 /* Chassis.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = Chassis.psd; path = Buggy/Chassis.psd; sourceTree = "<group>"; };
+		D351A45B1582A85100F74BF1 /* FrontStrut.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = FrontStrut.psd; path = Buggy/FrontStrut.psd; sourceTree = "<group>"; };
+		D351A45C1582A85100F74BF1 /* RearStrut.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = RearStrut.psd; path = Buggy/RearStrut.psd; sourceTree = "<group>"; };
+		D351A45D1582A85100F74BF1 /* Wheel.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = Wheel.psd; path = Buggy/Wheel.psd; sourceTree = "<group>"; };
+		D351A4621582A87A00F74BF1 /* SpaceBuggy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpaceBuggy.h; sourceTree = "<group>"; };
+		D351A4631582A87A00F74BF1 /* SpaceBuggy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpaceBuggy.m; sourceTree = "<group>"; };
 		D352333E1580F27A00466A06 /* TerrainMix.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TerrainMix.png; sourceTree = "<group>"; };
 		D37893C015769BCD006CBEE8 /* chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk.h; sourceTree = "<group>"; };
 		D37893C115769BCD006CBEE8 /* chipmunk_ffi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chipmunk_ffi.h; sourceTree = "<group>"; };
@@ -568,6 +580,7 @@
 		D3AAFDDA156F2BC500C67169 /* HMVectorNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HMVectorNode.m; sourceTree = "<group>"; };
 		D3E5E48815780CFA0096C8B0 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
 		D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChassisOutline.psd; path = Buggy/ChassisOutline.psd; sourceTree = "<group>"; };
 		D3F6F023157013B200A158A8 /* ChipmunkDebugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChipmunkDebugNode.h; sourceTree = "<group>"; };
 		D3F6F024157013B200A158A8 /* ChipmunkDebugNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChipmunkDebugNode.m; sourceTree = "<group>"; };
 		D3F8E003157D755000457513 /* Terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Terrain.png; sourceTree = "<group>"; };
@@ -669,6 +682,11 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */,
+				D351A45A1582A85100F74BF1 /* Chassis.psd */,
+				D351A45B1582A85100F74BF1 /* FrontStrut.psd */,
+				D351A45C1582A85100F74BF1 /* RearStrut.psd */,
+				D351A45D1582A85100F74BF1 /* Wheel.psd */,
 				D351A43C15814B7500F74BF1 /* Sky.psd */,
 				D351A445158152AC00F74BF1 /* Parallax.psd */,
 				D351A44315814E7E00F74BF1 /* TerrainDetail.psd */,
@@ -732,6 +750,8 @@
 				D3F8E010157EAD8700457513 /* DeformableTerrainSprite.m */,
 				D38FE0E7157EDF4F00E47812 /* DeformableTerrain.vsh */,
 				D3F8E012157EBC9300457513 /* DeformableTerrain.fsh */,
+				D351A4621582A87A00F74BF1 /* SpaceBuggy.h */,
+				D351A4631582A87A00F74BF1 /* SpaceBuggy.m */,
 				D3EF444A1577F2DA0014CC89 /* HMUtils */,
 				D3AAFBDB156F22DD00C67169 /* Resources */,
 				D3AAFBF3156F22DD00C67169 /* libs */,
@@ -1290,6 +1310,11 @@
 				D351A44415814E7E00F74BF1 /* TerrainDetail.psd in Resources */,
 				D351A446158152AC00F74BF1 /* Parallax.psd in Resources */,
 				D351A459158266D200F74BF1 /* Mound.png in Resources */,
+				D351A45E1582A85200F74BF1 /* Chassis.psd in Resources */,
+				D351A45F1582A85200F74BF1 /* FrontStrut.psd in Resources */,
+				D351A4601582A85200F74BF1 /* RearStrut.psd in Resources */,
+				D351A4611582A85200F74BF1 /* Wheel.psd in Resources */,
+				D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1436,6 +1461,7 @@
 				D3F6F025157013B200A158A8 /* ChipmunkDebugNode.m in Sources */,
 				D3F8E011157EAD8700457513 /* DeformableTerrainSprite.m in Sources */,
 				D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */,
+				D351A4641582A87A00F74BF1 /* SpaceBuggy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
