@@ -46,7 +46,55 @@ enum Z_ORDER {
 };
 
 
-#define WeakSelf(__var__) __unsafe_unretained typeof(*self) *__var__ = self
+//@interface MashableButton : CCLayer<CCTargetedTouchDelegate>
+//
+//@property(nonatomic, readonly) BOOL value;
+//
+//@end
+//
+//
+//@implementation MashableButton
+//
+//@synthesize value = _value;
+//
+//-(id)init
+//{
+//	if((self = [super init])){
+//		[self addChild:[CCSprite spriteWithFile:@"Button"]];
+//		self.isTouchEnabled = TRUE;
+//	}
+//	
+//	return self;
+//}
+//
+//static const CGFloat MASH_RADIUS = 50.0;
+//
+//-(BOOL)updateValueForTouch:(UITouch *)touch
+//{
+//	return (_value = (ccpLengthSQ([self convertTouchToNodeSpace:touch]) < MASH_RADIUS*MASH_RADIUS));
+//}
+//
+//-(BOOL)ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event
+//{
+//	return [self updateValueForTouch:touch];
+//}
+//
+//-(void)ccTouchMoved:(UITouch *)touch withEvent:(UIEvent *)event
+//{
+//	[self updateValueForTouch:touch];
+//}
+//
+//-(void)ccTouchEnded:(UITouch *)touch withEvent:(UIEvent *)event
+//{
+//	_value = FALSE;
+//}
+//
+//-(void)ccTouchCancelled:(UITouch *)touch withEvent:(UIEvent *)event
+//{
+//	return [self ccTouchEnded:touch withEvent:event];
+//}
+//
+//@end
 
 
 @interface SpacePatrolLayer()
@@ -59,6 +107,8 @@ enum Z_ORDER {
 	ChipmunkSpace *space;
 	ChipmunkMultiGrab *multiGrab;
 	ChipmunkDebugNode *debugNode;
+	
+	CCMenuItemSprite *goButton, *stopButton;
 	
 	CCNode *world;
 	DeformableTerrainSprite *terrain;
@@ -92,10 +142,6 @@ enum Z_ORDER {
 		
 		multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
 		multiGrab.grabRadius = 50.0;
-//		multiGrab.pushMode = TRUE;
-//		multiGrab.pushMass = 10.0;
-//		multiGrab.pushFriction = 0.7;
-//		multiGrab.layers = COLLISION_RULE_BUGGY_ONLY;
 		
 		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:32.0 tileSize:32];
 		[world addChild:terrain z:Z_TERRAIN];
@@ -120,7 +166,16 @@ enum Z_ORDER {
 		}];
 		showDebug.position = ccp(400, 300);
 		
-		CCMenu *menu = [CCMenu menuWithItems:reset, showDebug, nil];
+		goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+		goButton.selectedImage.color = ccc3(128, 128, 128);
+		goButton.position = ccp(480 - 50, 50);
+		
+		stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+		stopButton.selectedImage.color = ccc3(128, 128, 128);
+		stopButton.scaleX = -1.0;
+		stopButton.position = ccp(50, 50);
+		
+		CCMenu *menu = [CCMenu menuWithItems:reset, showDebug, goButton, stopButton, nil];
 		menu.position = CGPointZero;
 		[self addChild:menu z:Z_MENU];
 		
@@ -156,6 +211,9 @@ cpBBFromCGRect(CGRect rect)
 
 -(void)tick:(ccTime)fixed_dt
 {
+	int throttle = goButton.isSelected - stopButton.isSelected;
+	[buggy update:fixed_dt throttle:throttle];
+	
 	[space step:fixed_dt];
 }
 
@@ -186,13 +244,6 @@ cpBBFromCGRect(CGRect rect)
 		ccpDistanceSQ(location, lastTouchLocation) > threshold*threshold &&
 		(currentTouchRemoves || ![space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape)
 	){
-//		if(!currentTouchRemoves){
-//			ChipmunkNearestPointQueryInfo *info = [space nearestPointQueryNearest:location maxDistance:radius layers:COLLISION_RULE_BUGGY_ONLY group:nil];
-//			if(info.shape){
-//				location = cpvadd(info.point, cpvmult(cpvnormalize(cpvsub(location, info.point)), radius));
-//			}
-//		}
-		
 		[terrain modifyTerrainAt:location radius:radius remove:currentTouchRemoves];
 		lastTouchLocation = location;
 	}
@@ -223,9 +274,10 @@ cpBBFromCGRect(CGRect rect)
 		_fixedTime += fixed_dt;
 	}
 	
+	[buggy sync];
 	if(multiGrab.grabCount == 0){
 		// TODO Should smooth this out better.
-		world.position = cpvsub(cpv(240, 160), buggy.pos);
+		world.position = cpvsub(cpv(240, 160), cpBBClampVect(cpBBNew(240, 160, terrain.width - 240, terrain.height - 160), buggy.pos));
 	}
 }
 
@@ -235,40 +287,14 @@ cpBBFromCGRect(CGRect rect)
 	[self.scheduler scheduleSelector:@selector(invoke) forTarget:[block copy] interval:0.0 paused:FALSE repeat:1 delay:delay];
 }
 
-//-(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//	for(UITouch *touch in touches){
-//		if(!currentTouch){
-//			currentTouch = touch;
-//			
-//			cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
-//			currentTouchRemoves = (density < 0.5);
-//		}
-//	}
-//}
-//
-//-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//	for(UITouch *touch in touches){
-//		if(touch == currentTouch){
-//			currentTouch = nil;
-//		}
-//	}
-//}
-//
-//-(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//	[self ccTouchesEnded:touches withEvent:event];
-//}
-
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
 		[multiGrab beginLocation:[terrain convertTouchToNodeSpace:touch]];
-		NSLog(@"multiGrabBegin %p", touch);
+//		NSLog(@"multiGrabBegin %p", touch);
 		
 		if(!currentTouch){
-			NSLog(@"deformTouchBegin %p", touch);
+//			NSLog(@"deformTouchBegin %p", touch);
 			currentTouch = touch;
 			
 			cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
@@ -287,11 +313,11 @@ cpBBFromCGRect(CGRect rect)
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		NSLog(@"multiGrabEnd %p", touch);
+//		NSLog(@"multiGrabEnd %p", touch);
 		[multiGrab endLocation:[terrain convertTouchToNodeSpace:touch]];
 		
 		if(touch == currentTouch){
-			NSLog(@"deformTouchEnd %p", touch);
+//			NSLog(@"deformTouchEnd %p", touch);
 			currentTouch = nil;
 		}
 	}

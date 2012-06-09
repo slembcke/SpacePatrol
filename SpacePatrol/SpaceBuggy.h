@@ -33,6 +33,7 @@
 
 -(id)initWithPosition:(cpVect)pos;
 
--(void)unschedule;
+-(void)update:(ccTime)dt throttle:(int)throttle;
+-(void)sync;
 
 @end

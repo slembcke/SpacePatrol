@@ -125,6 +125,8 @@ enum {
 	ChipmunkGrooveJoint *_frontJoint;
 	ChipmunkPinJoint *_rearJoint;
 	cpFloat _rearStrutRestAngle;
+	
+	ChipmunkSimpleMotor *_motor, *_frontBrake, *_rearBrake;
 }
 
 @synthesize chipmunkObjects = _chipmunkObjects, node = _node;
@@ -138,7 +140,6 @@ enum {
 {
 	if((self = [super init])){
 		_node = [CCNode node];
-		[_node.scheduler scheduleUpdateForTarget:self priority:1000 paused:FALSE];
 		
 		_chassis = [[SpaceBuggyChassis alloc] init];
 		_chassis.body.pos = pos;
@@ -179,7 +180,23 @@ enum {
 			ChipmunkConstraint *rearSpring = [ChipmunkDampedSpring dampedSpringWithBodyA:chassis bodyB:rear anchr1:rear_anchor anchr2:cpvzero restLength:0.0 stiffness:REAR_SPRING damping:REAR_DAMPING];
 			ChipmunkConstraint *rearStrutLimit = [ChipmunkSlideJoint slideJointWithBodyA:chassis bodyB:rear anchr1:rear_anchor anchr2:cpvzero min:0.0 max:20.0];
 			
-			_chipmunkObjects = [NSArray arrayWithObjects:_chassis, _frontWheel, _rearWheel, _frontJoint, frontSpring, _rearJoint, rearSpring, rearStrutLimit, nil];
+			_motor = [ChipmunkSimpleMotor simpleMotorWithBodyA:chassis bodyB:rear rate:ENGINE_MAX_W];
+			_motor.maxForce = 0.0;
+			
+			ChipmunkSimpleMotor *differential = [ChipmunkSimpleMotor simpleMotorWithBodyA:rear bodyB:front rate:0.0];
+			differential.maxForce = ENGINE_MAX_TORQUE*DIFFERENTIAL_TORQUE;
+			
+			_frontBrake = [ChipmunkSimpleMotor simpleMotorWithBodyA:chassis bodyB:front rate:0.0];
+			_rearBrake = [ChipmunkSimpleMotor simpleMotorWithBodyA:chassis bodyB:rear rate:0.0];
+			_frontBrake.maxForce = _rearBrake.maxForce = ROLLING_FRICTION;
+			
+			_chipmunkObjects = [NSArray arrayWithObjects:
+				_chassis, _frontWheel, _rearWheel,
+				_frontJoint, frontSpring, _frontBrake,
+				_rearJoint, rearSpring, _rearBrake,
+				rearStrutLimit, _motor, differential,
+				nil
+			];
 		}
 	}
 	
@@ -201,7 +218,21 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 	return cpvadd(anchor, cpvmult(n, dist));
 }
 
--(void)update:(ccTime)dt
+-(void)update:(ccTime)dt throttle:(int)throttle;
+{
+	if(throttle > 0){
+		_motor.maxForce = cpfclamp01(1.0 - (_rearWheel.body.angVel - _chassis.body.angVel)/ENGINE_MAX_W)*ENGINE_MAX_TORQUE;
+		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
+	} else if(throttle < 0){
+		_motor.maxForce = 0.0;
+		_rearBrake.maxForce = _frontBrake.maxForce = BRAKING_TORQUE;
+	} else {
+		_motor.maxForce = 0.0;
+		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
+	}
+}
+
+-(void)sync
 {
 	// Sync the chassis normally.
 	_chassis.node.position = _chassis.body.pos;
@@ -228,11 +259,6 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 -(cpVect)pos
 {
 	return _chassis.body.pos;
-}
-
--(void)unschedule
-{
-	[_node.scheduler unscheduleAllSelectorsForTarget:self];
 }
 
 @end

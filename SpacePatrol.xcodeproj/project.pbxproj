@@ -176,6 +176,7 @@
 		D3AAFDE1156F32F000C67169 /* HMVectorNode.vsh in Resources */ = {isa = PBXBuildFile; fileRef = D3AAFDD6156F2BB700C67169 /* HMVectorNode.vsh */; };
 		D3E5E4AE157851E40096C8B0 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */; };
 		D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */; };
+		D3F1160D1583037700B4C7B7 /* Button.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3F1160C1583037700B4C7B7 /* Button.psd */; };
 		D3F6F025157013B200A158A8 /* ChipmunkDebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F6F024157013B200A158A8 /* ChipmunkDebugNode.m */; };
 		D3F8E004157D755000457513 /* Terrain.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F8E003157D755000457513 /* Terrain.png */; };
 		D3F8E011157EAD8700457513 /* DeformableTerrainSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F8E010157EAD8700457513 /* DeformableTerrainSprite.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -581,6 +582,7 @@
 		D3E5E48815780CFA0096C8B0 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
 		D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChassisOutline.psd; path = Buggy/ChassisOutline.psd; sourceTree = "<group>"; };
+		D3F1160C1583037700B4C7B7 /* Button.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Button.psd; sourceTree = "<group>"; };
 		D3F6F023157013B200A158A8 /* ChipmunkDebugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChipmunkDebugNode.h; sourceTree = "<group>"; };
 		D3F6F024157013B200A158A8 /* ChipmunkDebugNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChipmunkDebugNode.m; sourceTree = "<group>"; };
 		D3F8E003157D755000457513 /* Terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Terrain.png; sourceTree = "<group>"; };
@@ -682,6 +684,7 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D3F1160C1583037700B4C7B7 /* Button.psd */,
 				D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */,
 				D351A45A1582A85100F74BF1 /* Chassis.psd */,
 				D351A45B1582A85100F74BF1 /* FrontStrut.psd */,
@@ -1315,6 +1318,7 @@
 				D351A4601582A85200F74BF1 /* RearStrut.psd in Resources */,
 				D351A4611582A85200F74BF1 /* Wheel.psd in Resources */,
 				D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */,
+				D3F1160D1583037700B4C7B7 /* Button.psd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
