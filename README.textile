@@ -34,11 +34,10 @@ After drawing terrain deformations into the CGBitmapContext, it marks the drawn 
 The terrain shader uses the value from the terrain density texture as a threshold to decide whether to draw terrain or the parallax background. If the density was used directly as the alpha, this would look terrible as it is somewhat blurry and upscaled by a huge amount. I used a lookup texture to get a nice threshold for the terrain as well as the thickness of the crust on top. The threshold is perturbed by a second texture to make the crust look more interesting.
 
 
-h2. Enhancements:
+h2. Future Enhancements:
 
 There are a few things that could be enhanced in the demo, but I didn't want to waste too much time on it. Maybe I'll come back around and do them later...
-* Because the terrain is drawn using a single gigantic quad, the precision of the texture samplers runs out about halfway across the world. This effectively halves the texture resolution. It could be fixed easily enough by splitting the quad into multiple pieces though.
+* Because the terrain is drawn using a single gigantic quad, the precision of the texture samplers is a little shaky. Despite centering the texture coords around (0,0) there are some filtering artifacts. It could be fixed easily enough by splitting the quad into multiple pieces though.
 * The quality of the anti-aliasing of the crust layer could be improved using a higher resolution mixing texture and/or using derivatives in the fragment shader (I left the latter commented out in the shader). The iPhone 4 doesn't have enough GPU horsepower to handle this though. You'd want to enable these only if the user has an iPhone 4s/iPad 2 or better.
 * Particle effects: Kick up dust and throw dirt from the wheels.
 * Motor noises or other sounds.
-* 
