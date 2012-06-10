@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D312F1D41583D4E300E9E47F /* Default-Landscae~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1CD1583D4E300E9E47F /* Default-Landscae~ipad.png */; };
+		D312F1D41583D4E300E9E47F /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1CD1583D4E300E9E47F /* Default-Landscape~ipad.png */; };
 		D312F1D61583D4E300E9E47F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1CF1583D4E300E9E47F /* Default@2x.png */; };
 		D312F1D71583D4E300E9E47F /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1D01583D4E300E9E47F /* Icon.png */; };
 		D312F1D81583D4E300E9E47F /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1D11583D4E300E9E47F /* Icon@2x.png */; };
@@ -205,7 +205,7 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
-		D312F1CD1583D4E300E9E47F /* Default-Landscae~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscae~ipad.png"; path = "Resources/Default-Landscae~ipad.png"; sourceTree = "<group>"; };
+		D312F1CD1583D4E300E9E47F /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape~ipad.png"; path = "Resources/Default-Landscape~ipad.png"; sourceTree = "<group>"; };
 		D312F1CE1583D4E300E9E47F /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Resources/Default.png; sourceTree = "<group>"; };
 		D312F1CF1583D4E300E9E47F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "Resources/Default@2x.png"; sourceTree = "<group>"; };
 		D312F1D01583D4E300E9E47F /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
@@ -779,7 +779,7 @@
 		D3AAFBDB156F22DD00C67169 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D312F1CD1583D4E300E9E47F /* Default-Landscae~ipad.png */,
+				D312F1CD1583D4E300E9E47F /* Default-Landscape~ipad.png */,
 				D312F1CE1583D4E300E9E47F /* Default.png */,
 				D312F1CF1583D4E300E9E47F /* Default@2x.png */,
 				D312F1D01583D4E300E9E47F /* Icon.png */,
@@ -1339,7 +1339,7 @@
 				D351A4611582A85200F74BF1 /* Wheel.psd in Resources */,
 				D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */,
 				D3F1160D1583037700B4C7B7 /* Button.psd in Resources */,
-				D312F1D41583D4E300E9E47F /* Default-Landscae~ipad.png in Resources */,
+				D312F1D41583D4E300E9E47F /* Default-Landscape~ipad.png in Resources */,
 				D312F1D61583D4E300E9E47F /* Default@2x.png in Resources */,
 				D312F1D71583D4E300E9E47F /* Icon.png in Resources */,
 				D312F1D81583D4E300E9E47F /* Icon@2x.png in Resources */,

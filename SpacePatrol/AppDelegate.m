@@ -28,6 +28,7 @@
 
 @synthesize window=window_, navController=navController_, director=director_;
 
+// Use a custom projection so the same assets and code can work on iPad/iPhone without changes.
 -(void)updateProjection
 {
 	kmGLMatrixMode(KM_GL_PROJECTION);
@@ -52,12 +53,13 @@
 	
 	
 	CCGLView *glView = [CCGLView viewWithFrame:[window_ bounds]
-								   pixelFormat:kEAGLColorFormatRGBA8
-								   depthFormat:0
-							preserveBackbuffer:NO
-									sharegroup:nil
-								 multiSampling:NO
-							   numberOfSamples:0];
+		pixelFormat:kEAGLColorFormatRGBA8
+		depthFormat:0
+		preserveBackbuffer:NO
+		sharegroup:nil
+		multiSampling:NO
+		numberOfSamples:0
+	];
 	
 	// Enable multitouch
 	[glView setMultipleTouchEnabled:TRUE];
@@ -78,9 +80,7 @@
 	// for rotation and other messages
 	[director_ setDelegate:self];
 	
-	// 2D projection
 	[director_ setProjection:kCCDirectorProjectionCustom];
-	//	[director setProjection:kCCDirectorProjection3D];
 	
 	// Enables High Res mode (Retina Display) on iPhone 4 and maintains low res on all other devices
 	if( ! [director_ enableRetinaDisplay:TRUE] )
@@ -98,6 +98,10 @@
 	[window_ makeKeyAndVisible];
 	
 	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+		// This is a bit of a hack so that the iPad think it's running at 512x384 points at a 2x scale
+		// The retina iPad will have a 4x scale.
+		// I modified CCFileUtils slightly to make this work.
+		
 		director_->winSizeInPoints_ = CGSizeMake(512, 384);
 		director_->winSizeInPixels_ = CGSizeMake(1024, 768);
 		__ccContentScaleFactor *= 2;
@@ -109,8 +113,6 @@
 	// It can be RGBA8888, RGBA4444, RGB5_A1, RGB565
 	// You can change anytime.
 	[CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA8888];
-	
-	glClearColor(1, 1, 1, 1);
 	
 	// If the 1st suffix is not found and if fallback is enabled then fallback suffixes are going to searched. If none is found, it will try with the name without suffix.
 	// On iPad HD  : "-ipadhd", "-ipad",  "-hd"

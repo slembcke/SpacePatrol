@@ -25,16 +25,9 @@
 #import "ChipmunkAutoGeometry.h"
 #import "ChipmunkDebugNode.h"
 
+#import "Physics.h"
 #import "DeformableTerrainSprite.h"
 #import "SpaceBuggy.h"
-
-#import "Physics.h"
-
-#define PIXEL_SIZE 4.0
-#define TILE_SIZE 32.0
-
-static const ccColor4B SKY_COLOR = {30, 66, 78, 255};
-
 
 enum Z_ORDER {
 	Z_WORLD,
@@ -46,28 +39,36 @@ enum Z_ORDER {
 };
 
 
-@interface SpacePatrolLayer()
-
-@end
-
-
 @implementation SpacePatrolLayer {
-	CMMotionManager *motionManager;
-	ChipmunkSpace *space;
-	ChipmunkMultiGrab *multiGrab;
-	ChipmunkDebugNode *debugNode;
+	// Used for grabbing the accelerometer data
+	CMMotionManager *_motionManager;
 	
-	CCMenuItemSprite *goButton, *stopButton;
+	// The Chipmunk space for the physics simulation.
+	ChipmunkSpace *_space;
+	// Manages multi-touch grabbable objects.
+	ChipmunkMultiGrab *_multiGrab;
 	
-	CCNode *world;
-	DeformableTerrainSprite *terrain;
+	// The debug node for drawing the the physics debug overlay.
+	ChipmunkDebugNode *_debugNode;
+	// The menu buttons for controlling the car.
+	CCMenuItemSprite *_goButton, *_stopButton;
 	
-	UITouch *currentTouch;
-	BOOL currentTouchRemoves;
-	CGPoint lastTouchLocation;
+	// The CCNode that we'll be adding the terrain and car to.
+	CCNode *_world;
+	// The custom "sprite" that draws the terrain and parallax background.
+	DeformableTerrainSprite *_terrain;
 	
-	SpaceBuggy *buggy;
+	// The current UITouch object we are tracking to deform the terrain.
+	UITouch *_currentDeformTouch;
+	// True if we are digging dirt, false if we are filling
+	BOOL _currentDeformTouchRemoves;
+	// Location of the last place we deformed the terrain to avoid duplicates
+	CGPoint _lastDeformLocation;
 	
+	// The all important Super Space Ranger certified space buggy.
+	SpaceBuggy *_spaceBuggy;
+	
+	// Timer values for implementing a fixed timestep for the physics.
 	ccTime _accumulator, _fixedTime;
 }
 
@@ -82,27 +83,27 @@ enum Z_ORDER {
 -(id)init
 {
 	if((self = [super init])){
-		world = [CCNode node];
-		[self addChild:world z:Z_WORLD];
+		_world = [CCNode node];
+		[self addChild:_world z:Z_WORLD];
 		
-		// Setup the space
-		space = [[ChipmunkSpace alloc] init];
-		space.gravity = cpv(0.0f, -GRAVITY);
+		_space = [[ChipmunkSpace alloc] init];
+		_space.gravity = cpv(0.0f, -GRAVITY);
 		
-		multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
-		multiGrab.grabRadius = 50.0;
+		_multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:_space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
+		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
+		_multiGrab.grabRadius = 50.0;
 		
-		terrain = [[DeformableTerrainSprite alloc] initWithSpace:space texelScale:32.0 tileSize:32];
-		[world addChild:terrain z:Z_TERRAIN];
+		_terrain = [[DeformableTerrainSprite alloc] initWithFile:@"Terrain.png" space:_space texelScale:32.0 tileSize:32];
+		[_world addChild:_terrain z:Z_TERRAIN];
 		
-		buggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, 0.3*terrain.height)];
-		[world addChild:buggy.node z:Z_BUGGY];
-		[space add:buggy];
+		_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, 0.3*_terrain.height)];
+		[_world addChild:_spaceBuggy.node z:Z_BUGGY];
+		[_space add:_spaceBuggy];
 		
 		// Add a ChipmunkDebugNode to draw the space.
-		debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:space];
-		[world addChild:debugNode z:Z_DEBUG];
-		debugNode.visible = FALSE;
+		_debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:_space];
+		[_world addChild:_debugNode z:Z_DEBUG];
+		_debugNode.visible = FALSE;
 		
 		// Show some menu buttons.
 		CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){
@@ -111,20 +112,20 @@ enum Z_ORDER {
 		reset.position = ccp(50, 300);
 		
 		CCMenuItemLabel *showDebug = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Show Debug" fontName:@"Helvetica" fontSize:20] block:^(id sender){
-			debugNode.visible ^= TRUE;
+			_debugNode.visible ^= TRUE;
 		}];
 		showDebug.position = ccp(400, 300);
 		
-		goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-		goButton.selectedImage.color = ccc3(128, 128, 128);
-		goButton.position = ccp(480 - 50, 50);
+		_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+		_goButton.selectedImage.color = ccc3(128, 128, 128);
+		_goButton.position = ccp(480 - 50, 50);
 		
-		stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-		stopButton.selectedImage.color = ccc3(128, 128, 128);
-		stopButton.scaleX = -1.0;
-		stopButton.position = ccp(50, 50);
+		_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+		_stopButton.selectedImage.color = ccc3(128, 128, 128);
+		_stopButton.scaleX = -1.0;
+		_stopButton.position = ccp(50, 50);
 		
-		CCMenu *menu = [CCMenu menuWithItems:reset, showDebug, goButton, stopButton, nil];
+		CCMenu *menu = [CCMenu menuWithItems:reset, showDebug, _goButton, _stopButton, nil];
 		menu.position = CGPointZero;
 		[self addChild:menu z:Z_MENU];
 		
@@ -136,9 +137,9 @@ enum Z_ORDER {
 
 -(void)onEnter
 {
-	motionManager = [[CMMotionManager alloc] init];
-	motionManager.accelerometerUpdateInterval = [CCDirector sharedDirector].animationInterval;
-	[motionManager startAccelerometerUpdates];
+	_motionManager = [[CMMotionManager alloc] init];
+	_motionManager.accelerometerUpdateInterval = [CCDirector sharedDirector].animationInterval;
+	[_motionManager startAccelerometerUpdates];
 	
 	[self scheduleUpdate];
 	[super onEnter];
@@ -146,8 +147,8 @@ enum Z_ORDER {
 
 -(void)onExit
 {
-	[motionManager stopAccelerometerUpdates];
-	motionManager = nil;
+	[_motionManager stopAccelerometerUpdates];
+	_motionManager = nil;
 	
 	[super onExit];
 }
@@ -158,95 +159,115 @@ cpBBFromCGRect(CGRect rect)
 	return cpBBNew(CGRectGetMinX(rect), CGRectGetMinY(rect), CGRectGetMaxX(rect), CGRectGetMaxY(rect));
 }
 
+// A "tick" is a single fixed time-step
+// This method is called 240 times per second.
 -(void)tick:(ccTime)fixed_dt
 {
-	int throttle = goButton.isSelected - stopButton.isSelected;
-	[buggy update:fixed_dt throttle:throttle];
+	// Update the throttle values on the space buggy's motors.
+	int throttle = _goButton.isSelected - _stopButton.isSelected;
+	[_spaceBuggy update:fixed_dt throttle:throttle];
 	
-	[space step:fixed_dt];
+	[_space step:fixed_dt];
 }
 
 -(void)updateGravity
 {
 #if TARGET_IPHONE_SIMULATOR
+	// The accelerometer always returns (0, 0, 0) on the simulator which is unhelpful.
+	// Let's hardcode it to be always down instead.
 	CMAcceleration gravity = {-1, 0, 0};
 #else
-	CMAcceleration gravity = motionManager.accelerometerData.acceleration;
+	CMAcceleration gravity = _motionManager.accelerometerData.acceleration;
 #endif
 	
-	space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
+	_space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
 }
 
 -(CGPoint)touchLocation:(UITouch *)touch
 {
-	return [terrain convertTouchToNodeSpace:currentTouch];
+	return [_terrain convertTouchToNodeSpace:_currentDeformTouch];
 }
 
 -(void)modifyTerrain
 {
+	if(!_currentDeformTouch) return;
+	
 	CGFloat radius = 100.0;
 	CGFloat threshold = 0.025*radius;
 	
-	CGPoint location = [self touchLocation:currentTouch];
+	// UITouch objects are persistent and continue to be updated for as long as the touch is occuring.
+	// This is handy because we can conveniently poll a touch's location.
+	CGPoint location = [self touchLocation:_currentDeformTouch];
 	
 	if(
-		ccpDistanceSQ(location, lastTouchLocation) > threshold*threshold &&
-		(currentTouchRemoves || ![space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape)
+		// Skip deforming the terrain if it's very near to the last place the terrain was deformed.
+		ccpDistanceSQ(location, _lastDeformLocation) > threshold*threshold &&
+		// Skip filling in dirt if it's too near to the car.
+		// If you filled in over the car it would fall through the terrain segments.
+		(_currentDeformTouchRemoves || ![_space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape)
 	){
-		[terrain modifyTerrainAt:location radius:radius remove:currentTouchRemoves];
-		lastTouchLocation = location;
+		[_terrain modifyTerrainAt:location radius:radius remove:_currentDeformTouchRemoves];
+		_lastDeformLocation = location;
 	}
 }
 
 -(void)update:(ccTime)dt
 {
-	if(currentTouch) [self modifyTerrain];
+	[self modifyTerrain];
 	
-	CGAffineTransform trans = CGAffineTransformInvert([terrain nodeToWorldTransform]);
+	// Get the worldspace rect of the screen to use as an "ensure" rect.
+	CGAffineTransform trans = CGAffineTransformInvert([_terrain nodeToWorldTransform]);
 	CGRect screen = CGRectMake(-100, -100, 680, 520);
 	CGRect rect = CGRectApplyAffineTransform(screen, trans);
 	
-	[terrain.tiles ensureRect:cpBBFromCGRect(rect)];
+	// Only terrain geometry that exists inside this "ensure" rect is guaranteed to exist.
+	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
+	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
+	[_terrain.tiles ensureRect:cpBBFromCGRect(rect)];
 	
 	[self updateGravity];
 	
-	// Update the physics
+	// Update the physics on a fixed time step.
+	// Because it's a potentially very fast game, I'm using a pretty small timestep.
+	// This ensures that everything is very responsive.
+	// It also avoids missed collisions as Chipmunk doesn't support swept collisions (yet).
 	ccTime fixed_dt = 1.0/240.0;
 	
+	// Add the current dynamic timestep to the accumulator.
 	_accumulator += dt;
+	// Subtract off fixed-sized chunks of time from the accumulator and step
 	while(_accumulator > fixed_dt){
 		[self tick:fixed_dt];
 		_accumulator -= fixed_dt;
 		_fixedTime += fixed_dt;
 	}
 	
-	[buggy sync];
-	if(multiGrab.grabCount == 0){
-		// TODO Should smooth this out better.
+	// Resync the space buggy's sprites.
+	// Take a look at the SpaceBuggy class to see why I don't just use ChipmunkSprites.
+	[_spaceBuggy sync];
+	
+	// Scroll the screen as long as we aren't dragging the car.
+	if(_multiGrab.grabCount == 0){
+		// Clamp off the position vector so we can't see outside of the terrain sprite.
 		CGSize winSize = [CCDirector sharedDirector].winSize;
-		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, terrain.width - winSize.width/2.0, terrain.height - winSize.height/2.0);
-		world.position = cpvsub(cpv(240, 160), cpBBClampVect(clampingBB, buggy.pos));
+		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, _terrain.width - winSize.width/2.0, _terrain.height - winSize.height/2.0);
+		
+		// TODO Should smooth this out better to avoid the pops when releasing the buggy.
+		_world.position = cpvsub(cpv(240, 160), cpBBClampVect(clampingBB, _spaceBuggy.pos));
 	}
-}
-
--(void)scheduleBlockOnce:(void (^)(void))block delay:(ccTime)delay
-{
-	// There really needs to be a 
-	[self.scheduler scheduleSelector:@selector(invoke) forTarget:[block copy] interval:0.0 paused:FALSE repeat:1 delay:delay];
 }
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		[multiGrab beginLocation:[terrain convertTouchToNodeSpace:touch]];
-//		NSLog(@"multiGrabBegin %p", touch);
+		[_multiGrab beginLocation:[_terrain convertTouchToNodeSpace:touch]];
 		
-		if(!currentTouch){
-//			NSLog(@"deformTouchBegin %p", touch);
-			currentTouch = touch;
+		if(!_currentDeformTouch){
+			_currentDeformTouch = touch;
 			
-			cpFloat density = [terrain.sampler sample:[self touchLocation:currentTouch]];
-			currentTouchRemoves = (density < 0.5);
+			// Check the density of the terrain at the touch location to see if we shold be filling or digging.
+			cpFloat density = [_terrain.sampler sample:[self touchLocation:_currentDeformTouch]];
+			_currentDeformTouchRemoves = (density < 0.5);
 		}
 	}
 }
@@ -254,19 +275,17 @@ cpBBFromCGRect(CGRect rect)
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		[multiGrab updateLocation:[terrain convertTouchToNodeSpace:touch]];
+		[_multiGrab updateLocation:[_terrain convertTouchToNodeSpace:touch]];
 	}
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-//		NSLog(@"multiGrabEnd %p", touch);
-		[multiGrab endLocation:[terrain convertTouchToNodeSpace:touch]];
+		[_multiGrab endLocation:[_terrain convertTouchToNodeSpace:touch]];
 		
-		if(touch == currentTouch){
-//			NSLog(@"deformTouchEnd %p", touch);
-			currentTouch = nil;
+		if(touch == _currentDeformTouch){
+			_currentDeformTouch = nil;
 		}
 	}
 }

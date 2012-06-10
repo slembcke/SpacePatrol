@@ -26,14 +26,25 @@
 
 @interface SpaceBuggy : NSObject<ChipmunkObject>
 
+// The position of the chassis of the buggy.
 @property(nonatomic, readonly) cpVect pos;
 
+// The array of ChipmunkObjects for the buggy.
+// This implements the ChipmunkObject protocol and allows you to add
+// the buggy to the space simply using [space add:buggy] or similar.
 @property(nonatomic, retain) NSArray *chipmunkObjects;
+
+// The parent node for the buggy's sprites.
 @property(nonatomic, retain) CCNode *node;
 
 -(id)initWithPosition:(cpVect)pos;
 
+// Update the motors attached to the buggy.
 -(void)update:(ccTime)dt throttle:(int)throttle;
+
+// Resync the sprite and body positions.
+// Normally you would use something like ChipmunkSprite to do this.
+// See the method implementation for why I didn't.
 -(void)sync;
 
 @end

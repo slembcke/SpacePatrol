@@ -39,15 +39,25 @@ uniform sampler2D mix_texture;
 
 void main()
 {
+	// Composite the parallax texture over the sky texture.
 	lowp vec4 sky_color = texture2D(sky_texture, frag_sky_texcoord);
 	lowp vec4 parallax_color = texture2D(parallax_texture, frag_parallax_texcoord);
 	lowp vec4 bg_color = mix(sky_color, parallax_color, parallax_color.a);
 	
-	highp float density = texture2D(density_texture, frag_density_texcoord).a;
-	highp float crust = texture2D(crust_texture, frag_terrain_texcoord).a;
-	lowp vec4 mix_color = texture2D(mix_texture, vec2(density, crust));
+	// Grab the terrain detail texture.
 	lowp vec4 terrain_color = texture2D(terrain_texture, frag_terrain_texcoord);
 	
+	// Lookup the mixing color
+	highp float density = texture2D(density_texture, frag_density_texcoord).a;
+	highp float crust = texture2D(crust_texture, frag_terrain_texcoord).a;
+	// The mixing and crust lookup textures control the shape of the terrain's crust layer.
+	lowp vec4 mix_color = texture2D(mix_texture, vec2(density, crust));
+	
+	// On more powerful hardware like the iPad 2 or iPhone 4S, you can improve the anti-aliasing.
+	// I didn't bother putting in hardware checks though... Too lazy for a demo project.
+	// You would do something like this though:
 //	mix_color = smoothstep(0.5, 0.5*fwidth(mix_color) + 0.5, mix_color);
+	
+	// Composite the terrain and crust over the background for the final result!
 	gl_FragColor = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
 }

@@ -26,15 +26,21 @@
 
 @interface DeformableTerrainSprite : CCNode
 
-@property(nonatomic, assign) cpFloat texelSize;
-@property(nonatomic, retain) ChipmunkImageSampler *sampler;
-@property(nonatomic, retain) ChipmunkBasicTileCache *tiles;
+// How much to upscale the terrain when rendering it to the screen.
+@property(nonatomic, readonly) cpFloat texelSize;
 
+// The sampler created for the terrain.
+@property(nonatomic, readonly, strong) ChipmunkImageSampler *sampler;
+// The tile cache created for the terrain.
+@property(nonatomic, readonly, strong) ChipmunkBasicTileCache *tiles;
+
+// The width and height of the terrain. (texelSize times the image width or height)
 @property(nonatomic, readonly) cpFloat width;
 @property(nonatomic, readonly) cpFloat height;
 
--(id)initWithSpace:(ChipmunkSpace *)space texelScale:(cpFloat)texelScale tileSize:(int)tileSize;
+-(id)initWithFile:(NSString *)filename space:(ChipmunkSpace *)space texelScale:(cpFloat)texelScale tileSize:(int)tileSize;
 
+// Add or remove dirt at the given location.
 -(void)modifyTerrainAt:(cpVect)pos radius:(cpFloat)radius remove:(BOOL)remove;
 
 @end

@@ -149,6 +149,9 @@ CGFloat	__ccContentScaleFactor = 1;
 		[scheduler_ update: dt];
 
 //	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// Dunno if you really need to do this if your EAGL layer isn't retained.
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, (GLenum[]){GL_COLOR_ATTACHMENT0});
 
 	/* to avoid flickr, nextScene MUST be here: after tick and before draw.
 	 XXX: Which bug is this one. It seems that it can't be reproduced with v0.9 */
