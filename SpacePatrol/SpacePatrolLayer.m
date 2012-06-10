@@ -96,9 +96,18 @@ enum Z_ORDER {
 		_terrain = [[DeformableTerrainSprite alloc] initWithFile:@"Terrain.png" space:_space texelScale:32.0 tileSize:32];
 		[_world addChild:_terrain z:Z_TERRAIN];
 		
-		_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpv(100.0, 0.3*_terrain.height)];
-		[_world addChild:_spaceBuggy.node z:Z_BUGGY];
-		[_space add:_spaceBuggy];
+		{
+			// We need to find the terrain's ground level so we can drop the buggy at the surface.
+			// You can't use a raycast because there is no geometry in space until the tile cache adds it.
+			// Instead, we'll sample upwards along the terrain's density to find somewhere where the density is low (where there isn't dirt).
+			cpVect pos = cpv(300, 0.0);
+			while([_terrain.sampler sample:pos] > 0.5) pos.y += 10.0;
+			
+			// Add the car just above that level.
+			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 30))];
+			[_world addChild:_spaceBuggy.node z:Z_BUGGY];
+			[_space add:_spaceBuggy];
+		}
 		
 		// Add a ChipmunkDebugNode to draw the space.
 		_debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:_space];
