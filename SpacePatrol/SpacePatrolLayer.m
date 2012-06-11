@@ -93,7 +93,7 @@ enum Z_ORDER {
 		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
 		_multiGrab.grabRadius = 50.0;
 		
-		_terrain = [[DeformableTerrainSprite alloc] initWithFile:@"Terrain.png" space:_space texelScale:32.0 tileSize:32];
+		_terrain = [[DeformableTerrainSprite alloc] initWithFile:@"Terrain.png" space:_space texelScale:32.0 tileSize:16];
 		[_world addChild:_terrain z:Z_TERRAIN];
 		
 		{
@@ -162,16 +162,21 @@ enum Z_ORDER {
 	[super onExit];
 }
 
-static cpBB
-cpBBFromCGRect(CGRect rect)
-{
-	return cpBBNew(CGRectGetMinX(rect), CGRectGetMinY(rect), CGRectGetMaxX(rect), CGRectGetMaxY(rect));
-}
-
 // A "tick" is a single fixed time-step
 // This method is called 240 times per second.
 -(void)tick:(ccTime)fixed_dt
 {
+	// Only terrain geometry that exists inside this "ensure" rect is guaranteed to exist.
+	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
+	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
+	// I made this rect slightly smaller than the screen so you can see it adding terrain chunks if you turn on debug rendering.
+	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 150)];
+	
+	// Warning: A mistake I made initially was to ensure the screen's rect, instead of the area around the car.
+	// This was bad because the view isn't centered on the car until after the physics is run.
+	// If the framerate stuttered enough (like during the first frame or two) the buggy could move out of the ensured rect.
+	// It would fall right through terrain that never had collision geometry generated for it.
+	
 	// Update the throttle values on the space buggy's motors.
 	int throttle = _goButton.isSelected - _stopButton.isSelected;
 	[_spaceBuggy update:fixed_dt throttle:throttle];
@@ -223,17 +228,6 @@ cpBBFromCGRect(CGRect rect)
 -(void)update:(ccTime)dt
 {
 	[self modifyTerrain];
-	
-	// Get the worldspace rect of the screen to use as an "ensure" rect.
-	CGAffineTransform trans = CGAffineTransformInvert([_terrain nodeToWorldTransform]);
-	CGRect screen = CGRectMake(-100, -100, 680, 520);
-	CGRect rect = CGRectApplyAffineTransform(screen, trans);
-	
-	// Only terrain geometry that exists inside this "ensure" rect is guaranteed to exist.
-	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
-	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
-	[_terrain.tiles ensureRect:cpBBFromCGRect(rect)];
-	
 	[self updateGravity];
 	
 	// Update the physics on a fixed time step.

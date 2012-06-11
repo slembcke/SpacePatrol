@@ -15,7 +15,7 @@ h2. Overview:
 
 This is a Chipmunk Pro autogeometry demo project that is built on top of Cocos2D 2.0. The focus for this demo is to show how to mix Chipmunk Pro's autogeometry to implement very large scale, real-time deformable terrain with Cocos2D 2.0. Unlike the Cloud Bomber example, which deformed the terrain bitmap on the GPU and paid a high syncronization cost to read it back, Space Patrol deforms the bitmap using a CGBitmapContext and then uploads only the changed pixels back to the GPU.
 
-The terrain density texture is 2048x512 (You could go as high as 2048x2048 though). When rendering, this is upscaled by 16x (32x on retina) giving you a fully deformable world that is over 130 screen widths wide. That is a _huge_ world to explore from a measely 12kb PNG density image! Rendering the world is performed by a shader that renders all of the following in a single pass:
+The terrain density texture is 2048x512 (You could go as high as 2048x2048 though). When rendering, this is upscaled by 32x (64x on retina) giving you a fully deformable world that is over 130 screen widths wide. That is a _huge_ world to explore from a measely 12kb PNG density image! Rendering the world is performed by a shader that renders all of the following in a single pass:
 * A textured sky (Currently somewhat wased on a simple gradient)
 * A parallax background
 * A textured terrain layer
