@@ -87,7 +87,8 @@ typedef struct Vertex {
 		// You have to tell it the screen's rectangle every frame. This is performed in [SpacePatrolLayer update:].
 		// From there it figures out which tiles need to be created (or recreated if the terrain has been deformed).
 		// It completely handles creating and adding the segment shapes for a tile to the space, and removing them when the tile is uncached.
-		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:tileSize*_texelScale samplesPerTile:tileSize + 1 cacheSize:256];
+		// The cache size is the number of tiles it will keep in memory at a time.
+		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:tileSize*_texelScale samplesPerTile:tileSize + 1 cacheSize:20];
 		// Offset the tile cache sampling locations by half a texel so it hits texel centers.
 		// Things wouldn't quite line up correctly if you didn't do this.
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);

@@ -170,7 +170,7 @@ enum Z_ORDER {
 	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
 	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
 	// I made this rect slightly smaller than the screen so you can see it adding terrain chunks if you turn on debug rendering.
-	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 150)];
+	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 200)];
 	
 	// Warning: A mistake I made initially was to ensure the screen's rect, instead of the area around the car.
 	// This was bad because the view isn't centered on the car until after the physics is run.
