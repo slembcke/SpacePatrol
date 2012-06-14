@@ -131,6 +131,9 @@ typedef struct Vertex {
 		
 		// Load up the wavy brown terrain detail texture.
 		_terrainTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainDetail.png"];
+		// If the texture was already loaded previously, the texture won't be bound.
+		// You really only need to set the tex params once, but it's easier not to.
+		ccGLBindTexture2D(_terrainTexture.name);
 		// Set it to repeat on both the x and y axes.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
