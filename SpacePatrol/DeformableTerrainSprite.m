@@ -128,6 +128,8 @@ typedef struct Vertex {
 			pixelsWide:_sampler.width pixelsHigh:_sampler.height
 			contentSize:CGSizeMake(_sampler.width, _sampler.height)
 		];
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		
 		// Load up the wavy brown terrain detail texture.
 		_terrainTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainDetail.png"];

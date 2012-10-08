@@ -101,7 +101,7 @@ enum Z_ORDER {
 			// You can't use a raycast because there is no geometry in space until the tile cache adds it.
 			// Instead, we'll sample upwards along the terrain's density to find somewhere where the density is low (where there isn't dirt).
 			cpVect pos = cpv(300, 0.0);
-			while([_terrain.sampler sample:pos] > 0.5) pos.y += 10.0;
+			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
 			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 30))];
@@ -199,7 +199,7 @@ enum Z_ORDER {
 
 -(CGPoint)touchLocation:(UITouch *)touch
 {
-	return [_terrain convertTouchToNodeSpace:_currentDeformTouch];
+	return [_terrain convertTouchToNodeSpace:touch];
 }
 
 -(void)modifyTerrain
@@ -263,13 +263,15 @@ enum Z_ORDER {
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		[_multiGrab beginLocation:[_terrain convertTouchToNodeSpace:touch]];
+		cpVect location = [self touchLocation:touch];
+//		NSLog(@"sample%@: %f", NSStringFromCGPoint(location), [_terrain.sampler sample:location]);
+		[_multiGrab beginLocation:location];
 		
 		if(!_currentDeformTouch){
 			_currentDeformTouch = touch;
 			
 			// Check the density of the terrain at the touch location to see if we shold be filling or digging.
-			cpFloat density = [_terrain.sampler sample:[self touchLocation:_currentDeformTouch]];
+			cpFloat density = [_terrain.sampler sample:location];
 			_currentDeformTouchRemoves = (density < 0.5);
 		}
 	}
