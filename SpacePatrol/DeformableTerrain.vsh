@@ -33,12 +33,9 @@ varying mediump vec2 frag_parallax_texcoord;
 varying mediump vec2 frag_density_texcoord;
 varying mediump vec2 frag_terrain_texcoord;
 
-// The MVP matrix expected by Cocos2D
-uniform mat4 u_MVPMatrix;
-
 void main()
 {
-	highp vec4 clip_space = u_MVPMatrix*vec4(position, 0, 1);
+	highp vec4 clip_space = CC_MVPMatrix*vec4(position, 0, 1);
 	gl_Position = clip_space;
 	
 	// The sky and parallax layers are applied relative to the screen.

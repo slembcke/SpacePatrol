@@ -19,10 +19,10 @@
  * SOFTWARE.
  */
 
-#import "cocos2d.h"
-
 #import "ObjectiveChipmunk.h"
 #import "ChipmunkAutoGeometry.h"
+
+#import "cocos2d.h"
 
 @interface DeformableTerrainSprite : CCNode
 

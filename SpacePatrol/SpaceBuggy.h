@@ -19,9 +19,8 @@
  * SOFTWARE.
  */
 
-#import "cocos2d.h"
 #import "ObjectiveChipmunk.h"
-#import "ChipmunkSprite.h"
+#import "cocos2d.h"
 
 
 @interface SpaceBuggy : NSObject<ChipmunkObject>

@@ -137,7 +137,7 @@
 }
 - (NSString*) description
 {
-	return [NSString stringWithFormat:@"<%@ = %p | Dimensions = %ix%i>", [self class], self, gridSize_.x, gridSize_.y];
+	return [NSString stringWithFormat:@"<%@ = %p | Dimensions = %ldx%ld>", [self class], self, (long)gridSize_.x, (long)gridSize_.y];
 }
 
 - (void) dealloc
@@ -280,7 +280,7 @@
 
 	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords );
 	[shaderProgram_ use];
-	[shaderProgram_ setUniformForModelViewProjectionMatrix];
+	[shaderProgram_ setUniformsForBuiltins];
 
 	//
 	// Attributes
@@ -431,7 +431,7 @@
 	NSInteger n = gridSize_.x * gridSize_.y;
 
 	[shaderProgram_ use];
-	[shaderProgram_ setUniformForModelViewProjectionMatrix];
+	[shaderProgram_ setUniformsForBuiltins];
 
 
 	//

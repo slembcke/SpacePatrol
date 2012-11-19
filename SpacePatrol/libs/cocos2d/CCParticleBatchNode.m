@@ -124,7 +124,7 @@
 
 -(NSString*) description
 {
-	return [NSString stringWithFormat:@"<%@ = %p | Tag = %i>", [self class], self, tag_ ];
+	return [NSString stringWithFormat:@"<%@ = %p | Tag = %ld>", [self class], self, (long)tag_ ];
 }
 
 -(void)dealloc
@@ -359,7 +359,7 @@
 
 -(void)removeAllChildrenWithCleanup:(BOOL)doCleanup
 {
-	[children_ makeObjectsPerformSelector:@selector(useSelfRender)];
+	[children_ makeObjectsPerformSelector:@selector(setBatchNode:) withObject:nil];
 
 	[super removeAllChildrenWithCleanup:doCleanup];
 

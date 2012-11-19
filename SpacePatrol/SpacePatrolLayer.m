@@ -23,7 +23,6 @@
 
 #import "SpacePatrolLayer.h"
 #import "ChipmunkAutoGeometry.h"
-#import "ChipmunkDebugNode.h"
 
 #import "Physics.h"
 #import "DeformableTerrainSprite.h"
@@ -49,7 +48,7 @@ enum Z_ORDER {
 	ChipmunkMultiGrab *_multiGrab;
 	
 	// The debug node for drawing the the physics debug overlay.
-	ChipmunkDebugNode *_debugNode;
+	CCPhysicsDebugNode *_debugNode;
 	// The menu buttons for controlling the car.
 	CCMenuItemSprite *_goButton, *_stopButton;
 	
@@ -104,13 +103,13 @@ enum Z_ORDER {
 			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
-			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 30))];
+			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 60))];
 			[_world addChild:_spaceBuggy.node z:Z_BUGGY];
 			[_space add:_spaceBuggy];
 		}
 		
 		// Add a ChipmunkDebugNode to draw the space.
-		_debugNode = [ChipmunkDebugNode debugNodeForChipmunkSpace:_space];
+		_debugNode = [CCPhysicsDebugNode debugNodeForChipmunkSpace:_space];
 		[_world addChild:_debugNode z:Z_DEBUG];
 		_debugNode.visible = FALSE;
 		
@@ -250,7 +249,7 @@ enum Z_ORDER {
 	[_spaceBuggy sync];
 	
 	// Scroll the screen as long as we aren't dragging the car.
-	if(_multiGrab.grabCount == 0){
+	if(_multiGrab.grabs.count == 0){
 		// Clamp off the position vector so we can't see outside of the terrain sprite.
 		CGSize winSize = [CCDirector sharedDirector].winSize;
 		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, _terrain.width - winSize.width/2.0, _terrain.height - winSize.height/2.0);

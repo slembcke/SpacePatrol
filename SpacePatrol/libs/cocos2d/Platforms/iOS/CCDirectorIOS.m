@@ -148,10 +148,7 @@ CGFloat	__ccContentScaleFactor = 1;
 	if( ! isPaused_ )
 		[scheduler_ update: dt];
 
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	// Dunno if you really need to do this if your EAGL layer isn't retained.
-	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, (GLenum[]){GL_COLOR_ATTACHMENT0});
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* to avoid flickr, nextScene MUST be here: after tick and before draw.
 	 XXX: Which bug is this one. It seems that it can't be reproduced with v0.9 */
@@ -239,6 +236,18 @@ CGFloat	__ccContentScaleFactor = 1;
 	ccSetProjectionMatrixDirty();
 }
 
+// override default logic
+- (void)runWithScene:(CCScene*) scene
+{
+	NSAssert( scene != nil, @"Argument must be non-nil");
+	NSAssert(runningScene_ == nil, @"This command can only be used to start the CCDirector. There is already a scene present.");
+	
+	[self pushScene:scene];
+
+	NSThread *thread = [self runningThread];
+	[self performSelector:@selector(drawScene) onThread:thread withObject:nil waitUntilDone:YES];
+}
+
 #pragma mark Director - TouchDispatcher
 
 -(CCTouchDispatcher*) touchDispatcher
@@ -318,41 +327,65 @@ CGFloat	__ccContentScaleFactor = 1;
 	winSizeInPixels_ = CGSizeMake(winSizeInPoints_.width * __ccContentScaleFactor, winSizeInPoints_.height *__ccContentScaleFactor);
 
 	[self setProjection:projection_];
+  
+	if( [delegate_ respondsToSelector:@selector(directorDidReshapeProjection:)] )
+		[delegate_ directorDidReshapeProjection:self];
+}
+
+static void
+GLToClipTransform(kmMat4 *transformOut)
+{
+	kmMat4 projection;
+	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
+	
+	kmMat4 modelview;
+	kmGLGetMatrix(KM_GL_MODELVIEW, &modelview);
+	
+	kmMat4Multiply(transformOut, &projection, &modelview);
 }
 
 #pragma mark Director Point Convertion
 
 -(CGPoint)convertToGL:(CGPoint)uiPoint
 {
-	kmMat4 projection;
-	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
+	kmMat4 transform;
+	GLToClipTransform(&transform);
 	
-	kmMat4 inv_projection;
-	kmMat4Inverse(&inv_projection, &projection);
+	kmMat4 transformInv;
+	kmMat4Inverse(&transformInv, &transform);
+	
+	// Calculate z=0 using -> transform*[0, 0, 0, 1]/w
+	kmScalar zClip = transform.mat[14]/transform.mat[15];
 	
 	CGSize glSize = view_.bounds.size;
+	kmVec3 clipCoord = {2.0*uiPoint.x/glSize.width - 1.0, 1.0 - 2.0*uiPoint.y/glSize.height, zClip};
+	
 	kmVec3 glCoord;
-	kmVec3 v = {2.0*uiPoint.x/glSize.width - 1.0, 1.0 - 2.0*uiPoint.y/glSize.height};
-	kmVec3TransformCoord(&glCoord, &v, &inv_projection);
+	kmVec3TransformCoord(&glCoord, &clipCoord, &transformInv);
 	
+//	NSLog(@"uiPoint: %@, glPoint: %@", NSStringFromCGPoint(uiPoint), NSStringFromCGPoint(ccp(glCoord.x, glCoord.y)));
 	return ccp(glCoord.x, glCoord.y);
-//	CGSize s = winSizeInPoints_;
-//	float newY = s.height - uiPoint.y;
-//
-//	return ccp( uiPoint.x, newY );
-//	CGSize s = winSizeInPoints_;
-//	float newY = s.height - uiPoint.y;
-//
-//	return ccp(480.0*uiPoint.x/1024.0 - 16, 320.0*newY/768.0 - 32 );
-	
 }
+
+-(CGPoint)convertTouchToGL:(UITouch*)touch
+{
+	CGPoint uiPoint = [touch locationInView: [touch view]];
+	return [self convertToGL:uiPoint];
+}
+
 
 -(CGPoint)convertToUI:(CGPoint)glPoint
 {
-	CGSize winSize = winSizeInPoints_;
-	int oppositeY = winSize.height - glPoint.y;
-
-	return ccp(glPoint.x, oppositeY);
+	kmMat4 transform;
+	GLToClipTransform(&transform);
+		
+	kmVec3 clipCoord;
+	// Need to calculate the zero depth from the transform.
+	kmVec3 glCoord = {glPoint.x, glPoint.y, 0.0};
+	kmVec3TransformCoord(&clipCoord, &glCoord, &transform);
+	
+	CGSize glSize = view_.bounds.size;
+	return ccp(glSize.width*(clipCoord.x*0.5 + 0.5), glSize.height*(-clipCoord.y*0.5 + 0.5));
 }
 
 -(void) end

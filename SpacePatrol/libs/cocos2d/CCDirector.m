@@ -90,7 +90,7 @@ extern NSString * cocos2dVersion(void);
 @synthesize runningScene = runningScene_;
 @synthesize displayStats = displayStats_;
 @synthesize nextDeltaTimeZero = nextDeltaTimeZero_;
-@synthesize isPaused = isPaused_;
+@synthesize paused = isPaused_;
 @synthesize isAnimating = isAnimating_;
 @synthesize sendCleanupToScene = sendCleanupToScene_;
 @synthesize runningThread = runningThread_;
@@ -191,7 +191,6 @@ static CCDirector *_sharedDirector = nil;
 	[scenesStack_ release];
 	[scheduler_ release];
 	[actionManager_ release];
-	[delegate_ release];
 
 	_sharedDirector = nil;
 
@@ -252,7 +251,8 @@ static CCDirector *_sharedDirector = nil;
 -(void) purgeCachedData
 {
 	[CCLabelBMFont purgeCachedData];
-	[[CCTextureCache sharedTextureCache] removeUnusedTextures];
+	if ([_sharedDirector view])
+		[[CCTextureCache sharedTextureCache] removeUnusedTextures];
 	[[CCFileUtils sharedFileUtils] purgeCachedEntries];
 }
 
@@ -276,11 +276,10 @@ static CCDirector *_sharedDirector = nil;
 - (void) setAlphaBlending: (BOOL) on
 {
 	if (on) {
-		ccGLEnable(CC_GL_BLEND);
 		ccGLBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 
 	} else
-		glDisable(GL_BLEND);
+		ccGLBlendFunc(GL_ONE, GL_ZERO);
 
 	CHECK_GL_ERROR_DEBUG();
 }
@@ -367,6 +366,7 @@ static CCDirector *_sharedDirector = nil;
 - (void)runWithScene:(CCScene*) scene
 {
 	NSAssert( scene != nil, @"Argument must be non-nil");
+	NSAssert(runningScene_ == nil, @"This command can only be used to start the CCDirector. There is already a scene present.");
 
 	[self pushScene:scene];
 	[self startAnimation];
@@ -374,6 +374,7 @@ static CCDirector *_sharedDirector = nil;
 
 -(void) replaceScene: (CCScene*) scene
 {
+	NSAssert( runningScene_, @"Use runWithScene: instead to start the director");
 	NSAssert( scene != nil, @"Argument must be non-nil");
 
 	NSUInteger index = [scenesStack_ count];
@@ -408,8 +409,34 @@ static CCDirector *_sharedDirector = nil;
 	}
 }
 
+-(void) popToRootScene
+{
+	NSAssert(runningScene_ != nil, @"A running Scene is needed");
+	NSUInteger c = [scenesStack_ count];
+	
+	if (c == 1) {
+		[scenesStack_ removeLastObject];
+		[self end];
+	} else {
+		while (c > 1) {
+			CCScene *current = [scenesStack_ lastObject];
+			if( [current isRunning] ){
+				[current onExitTransitionDidStart];
+				[current onExit];
+			}
+			[current cleanup];
+
+			[scenesStack_ removeLastObject];
+			c--;
+		}
+		nextScene_ = [scenesStack_ lastObject];
+		sendCleanupToScene_ = NO;
+	}
+}
+
 -(void) end
 {
+	[runningScene_ onExitTransitionDidStart];
 	[runningScene_ onExit];
 	[runningScene_ cleanup];
 	[runningScene_ release];
@@ -428,7 +455,6 @@ static CCDirector *_sharedDirector = nil;
 	[drawsLabel_ release];
 	FPSLabel_ = nil, SPFLabel_=nil, drawsLabel_=nil;
 
-	[delegate_ release];
 	delegate_ = nil;
 
 	[self setView:nil];
@@ -464,6 +490,7 @@ static CCDirector *_sharedDirector = nil;
 
 	// If it is not a transition, call onExit/cleanup
 	if( ! newIsTransition ) {
+		[runningScene_ onExitTransitionDidStart];
 		[runningScene_ onExit];
 
 		// issue #709. the root node (scene) should receive the cleanup message too
@@ -558,7 +585,7 @@ static CCDirector *_sharedDirector = nil;
 			[FPSLabel_ setString:fpsstr];
 			[fpsstr release];
 			
-			NSString *draws = [[NSString alloc] initWithFormat:@"%4d", __ccNumberOfDraws];
+			NSString *draws = [[NSString alloc] initWithFormat:@"%4lu", (unsigned long)__ccNumberOfDraws];
 			[drawsLabel_ setString:draws];
 			[draws release];
 		}
@@ -588,9 +615,11 @@ static CCDirector *_sharedDirector = nil;
 
 		[FPSLabel_ release];
 		[SPFLabel_ release];
+		[drawsLabel_ release];
 		[[CCTextureCache sharedTextureCache ] removeTexture:texture];
 		FPSLabel_ = nil;
 		SPFLabel_ = nil;
+		drawsLabel_ = nil;
 		
 		[[CCFileUtils sharedFileUtils] purgeCachedEntries];
 	}

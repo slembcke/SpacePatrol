@@ -203,7 +203,7 @@ typedef struct Vertex {
 		
 		// Create the VAO for our node.
     glGenVertexArraysOES(1, &_vao);
-    glBindVertexArrayOES(_vao);
+		ccGLBindVAO(_vao);
 		
 		GLfloat sw = _texelScale*_sampler.width;
 		GLfloat sh = _texelScale*_sampler.height;
@@ -236,9 +236,7 @@ typedef struct Vertex {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, density_texcoord));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, terrain_texcoord));
 		
-		// When working with VOAs in Cocos2D 2.0, make sure to set the 0 VAO when you are done.
-		// Cocos2D doesn't currently track VAO state.
-    glBindVertexArrayOES(0);
+		ccGLBindVAO(0);
 		
 		PRINT_GL_ERRORS();
 	}
@@ -262,38 +260,21 @@ typedef struct Vertex {
 	// We are drawing all of the background and foreground layers in the shader anyway.
 	ccGLEnable(0);
 	
-	// Bind texture 0 using the Cocos2D state-caching wrapper function.
-	ccGLBindTexture2D(_densityTexture.name);
-	
-	// Bind the rest of the texture units.
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, _terrainTexture.name);
-	
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, _crustTexture.name);
-	
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, _mixTexture.name);
-	
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, _skyTexture.name);
-	
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, _parallaxTexture.name);
-	
-	glActiveTexture(GL_TEXTURE0);
+	ccGLBindTexture2DN(0, _densityTexture.name);
+	ccGLBindTexture2DN(1, _terrainTexture.name);
+	ccGLBindTexture2DN(2, _crustTexture.name);
+	ccGLBindTexture2DN(3, _mixTexture.name);
+	ccGLBindTexture2DN(4, _skyTexture.name);
+	ccGLBindTexture2DN(5, _parallaxTexture.name);
 	
 	// Bind the shader and set the matrix.
 	CCGLProgram *shader = self.shaderProgram;
 	[shader use];
-	[shader setUniformForModelViewProjectionMatrix];
+	[shader setUniformsForBuiltins];
 	
 	// Bind the VAO and draw.
-	glBindVertexArrayOES(_vao);
+	ccGLBindVAO(_vao);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-	
-	// Remember to revert the VAO state.
-	glBindVertexArrayOES(0);
 	
 	PRINT_GL_ERRORS();
 }
@@ -342,9 +323,9 @@ ClampInt(int i, int min, int max)
 	// x is rounded down by 4 and w is rounded up by 4.
 	// This ensures a correct stride size even when the rect is clipped by the left or right edges.
 	int sw = _sampler.width, sh = _sampler.height;
-	int x = ClampInt(floor(CGRectGetMinX(dirty)), 0, sw) & ~3;
+	int x = ClampInt(floor(CGRectGetMinX(dirty)), 0, sw) & ~0x03;
 	int y = ClampInt(floor(CGRectGetMinY(dirty)), 0, sh);
-	int w = ClampInt( ceil(CGRectGetMaxX(dirty)), 0, sw) - x; w = ((w - 1) | 3) + 1;
+	int w = ClampInt( ceil(CGRectGetMaxX(dirty)), 0, sw) - x; w = ((w - 1) | 0x03) + 1;
 	int h = ClampInt( ceil(CGRectGetMaxY(dirty)), 0, sh) - y;
 	
 	int stride = CGBitmapContextGetBytesPerRow(ctx);
@@ -357,7 +338,7 @@ ClampInt(int i, int min, int max)
 	// Finally replace the dirty pixels in the texture.
 	// Unfortunately this part is a little slow and may cause the framerate to stutter when the terrain is constantly deformed.
 	// Ideally you'd want to do this asyncronously, but I'm not really sure how at the moment.
-	glBindTexture(GL_TEXTURE_2D, _densityTexture.name);
+	ccGLBindTexture2D(_densityTexture.name);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_ALPHA, GL_UNSIGNED_BYTE, dirtyPixels);
 	
 //	PRINT_GL_ERRORS();

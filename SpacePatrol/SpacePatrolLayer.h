@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
 
+#import "ObjectiveChipmunk.h"
 #import "cocos2d.h"
 
 @interface SpacePatrolLayer : CCLayer
