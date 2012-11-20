@@ -41,3 +41,4 @@ There are a few things that could be enhanced in the demo, but I didn't want to 
 * The quality of the anti-aliasing of the crust layer could be improved using a higher resolution mixing texture and/or using derivatives in the fragment shader (I left the latter commented out in the shader). The iPhone 4 doesn't have enough GPU horsepower to handle this though. You'd want to enable these only if the user has an iPhone 4s/iPad 2 or better.
 * Particle effects: Kick up dust and throw dirt from the wheels.
 * Motor noises or other sounds.
+* It's currently using the SD textures but double scaling them on the iPad using a custom projection. I used to have a hack to force it to load the retina assets, but it tends to break with every Cocos version.

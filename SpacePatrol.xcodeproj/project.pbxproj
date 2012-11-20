@@ -1305,7 +1305,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SpacePatrol/Prefix.pch;
 				INFOPLIST_FILE = SpacePatrol/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/SpacePatrol/libs/ChipmunkPro-iPhone-Trial\"",
@@ -1329,7 +1328,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SpacePatrol/Prefix.pch;
 				INFOPLIST_FILE = SpacePatrol/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/SpacePatrol/libs/ChipmunkPro-iPhone-Trial\"",
@@ -1409,6 +1407,7 @@
 				D3DA21C7165AC760006BE259 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
