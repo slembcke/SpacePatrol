@@ -39,6 +39,24 @@
 		[director runWithScene: [SpacePatrolLayer scene]];
 	}
 }
+
+-(void)updateProjection
+{
+	kmGLMatrixMode(KM_GL_PROJECTION);
+	kmGLLoadIdentity();
+	
+	kmMat4 orthoMatrix;
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
+		kmMat4OrthographicProjection(&orthoMatrix, 0, 480, 0, 320, -1024, 1024 );
+	} else {
+		kmMat4OrthographicProjection(&orthoMatrix, -16, 496, -32, 352, -1024, 1024 );
+	}
+	kmGLMultMatrix( &orthoMatrix );
+	
+	kmGLMatrixMode(KM_GL_MODELVIEW);
+	kmGLLoadIdentity();
+}
+
 @end
 
 
@@ -75,8 +93,7 @@
 	[director_ setView:glView];
 	
 	// 2D projection
-	[director_ setProjection:kCCDirectorProjection2D];
-	//	[director setProjection:kCCDirectorProjection3D];
+	[director_ setProjection:kCCDirectorProjectionCustom];
 	
 	// Enables High Res mode (Retina Display) on iPhone 4 and maintains low res on all other devices
 	if( ! [director_ enableRetinaDisplay:YES] )
