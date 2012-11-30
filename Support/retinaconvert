@@ -9,8 +9,8 @@ def system(str)
 end
 
 def process(filename, outputname, tag, fmt)
-	system "#{IMAGECONVERT} 1.0 #{filename} #{outputname}#{tag}.#{fmt}"
-	system "#{IMAGECONVERT} 0.5 #{filename} #{outputname}.#{fmt}"
+	system "\"#{IMAGECONVERT}\" 1.0 \"#{filename}\" \"#{outputname}#{tag}.#{fmt}\""
+	system "\"#{IMAGECONVERT}\" 0.5 \"#{filename}\" \"#{outputname}.#{fmt}\""
 end
 
 require 'optparse'
