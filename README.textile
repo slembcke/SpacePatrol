@@ -25,9 +25,9 @@ Because this all happens in a single draw pass without blending to the framebuff
 
 h2. How it works:
 
-Chipmunk Pro allows you to trace images (or procedural functions) to turn them into geometry. For Objective-C, it comes with a few handy wrapper classes that make this easy to do. On of them, ChipmunkCGContextSampler, links the autogeometry to a CGBitmapContext. In this way you can perform high-quality, CPU side rendering of the terrain deformations.
+Chipmunk Pro allows you to trace images (or procedural functions) to turn them into geometry. For Objective-C, it comes with a few handy wrapper classes that make this easy to do. One of them, ChipmunkCGContextSampler, links the autogeometry to a CGBitmapContext. In this way you can perform high-quality, CPU side rendering of the terrain deformations.
 
-Then the ChipmunkCGContextSampler is linked up with a tile cache that breaks the world up into tiles. The geometry for a tile only needs to be regerated if it is onscreen (or some other rect you specify) and it's pixels have been modified. This means you don't need to waste CPU time or memory to process geometry that isn't onscreen.
+Then the ChipmunkCGContextSampler is linked up with a tile cache that breaks the world up into tiles. The geometry for a tile only needs to be regenerated if it is onscreen (or some other rect you specify) and its pixels have been modified. This means you don't need to waste CPU time or memory to process geometry that isn't onscreen.
 
 After drawing terrain deformations into the CGBitmapContext, it marks the drawn areas as dirty rects in the tile cache. It also uploads those dirty rects to the terrain density texture at this point too. This is unfortunately a little slow, making the framerate a little jump when constantly deforming the terrain, but I don't think there is much that can be done about that.
 
