@@ -18,7 +18,7 @@
 // And in iOS 6+ only, you can override it in the Root View controller in the "supportedInterfaceOrientations" method.
 // Only valid for iOS 6+. NOT VALID for iOS 4 / 5.
 -(NSUInteger)supportedInterfaceOrientations {
-	return UIInterfaceOrientationMaskAll;
+	return UIInterfaceOrientationMaskLandscapeRight;
 }
 
 // Supported orientations. Customize it for your own needs
@@ -47,7 +47,9 @@
 	
 	kmMat4 orthoMatrix;
 	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
-		kmMat4OrthographicProjection(&orthoMatrix, 0, 480, 0, 320, -1024, 1024 );
+		CGSize size = [CCDirector sharedDirector].winSize;
+		CGSize border = CGSizeMake(0.5f*(size.width - 480.0f), 0.5f*(size.height - 320.0f));
+		kmMat4OrthographicProjection(&orthoMatrix, -border.width, 480 + border.width, -border.height, 320 + border.height, -1024, 1024 );
 	} else {
 		kmMat4OrthographicProjection(&orthoMatrix, -16, 496, -32, 352, -1024, 1024 );
 	}
@@ -78,6 +80,7 @@
 									sharegroup:nil
 								 multiSampling:NO
 							   numberOfSamples:0];
+	glView.multipleTouchEnabled = TRUE;
 	
 	director_ = (CCDirectorIOS*) [CCDirector sharedDirector];
 	
