@@ -93,6 +93,9 @@
 /// Get the kinetic energy of this body.
 @property(nonatomic, readonly) cpFloat kineticEnergy;
 
+/// Get the space the body is added to.
+@property(nonatomic, readonly) ChipmunkSpace *space;
+
 /**
   Convert from body local to world coordinates.
   Convert a point in world (absolute) coordinates to body local coordinates affected by the position and rotation of the rigid body.
@@ -160,5 +163,17 @@ typedef void (^ChipmunkBodyArbiterIteratorBlock)(cpArbiter *arbiter);
 - (void)addToSpace:(ChipmunkSpace *)space;
 /// Implements the ChipmunkBaseObject protocol, not particularly useful outside of the library code
 - (void)removeFromSpace:(ChipmunkSpace *)space;
+
+//typedef void (*cpBodyVelocityFunc)(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt);
+///// Rigid body position update function type.
+//typedef void (*cpBodyPositionFunc)(cpBody *body, cpFloat dt);
+
+/// Override this to change the way that the body's velocity is integrated.
+/// You should either understand how the cpBodyUpdateVelocity() function works, or use the super method.
+-(void)updateVelocity:(cpFloat)dt gravity:(cpVect)gravity damping:(cpFloat)damping;
+
+/// OVerride this to change the way that the body's position is intgrated.
+/// You should either understand how the cpBodyUpdatePosition() function works, or use the super method.
+-(void)updatePosition:(cpFloat)dt;
 
 @end

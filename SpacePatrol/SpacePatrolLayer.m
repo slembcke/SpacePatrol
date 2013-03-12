@@ -86,7 +86,7 @@ enum Z_ORDER {
 		[self addChild:_world z:Z_WORLD];
 		
 		_space = [[ChipmunkSpace alloc] init];
-		_space.gravity = cpv(0.0f, -GRAVITY);
+//		_space.gravity = cpv(0.0f, -GRAVITY);
 		
 		_multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:_space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
 		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
@@ -99,7 +99,7 @@ enum Z_ORDER {
 			// We need to find the terrain's ground level so we can drop the buggy at the surface.
 			// You can't use a raycast because there is no geometry in space until the tile cache adds it.
 			// Instead, we'll sample upwards along the terrain's density to find somewhere where the density is low (where there isn't dirt).
-			cpVect pos = cpv(300, 0.0);
+			cpVect pos = cpv(256*_terrain.texelSize, 256*_terrain.texelSize);
 			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
@@ -185,15 +185,15 @@ enum Z_ORDER {
 
 -(void)updateGravity
 {
-#if TARGET_IPHONE_SIMULATOR
-	// The accelerometer always returns (0, 0, 0) on the simulator which is unhelpful.
-	// Let's hardcode it to be always down instead.
-	CMAcceleration gravity = {-1, 0, 0};
-#else
-	CMAcceleration gravity = _motionManager.accelerometerData.acceleration;
-#endif
-	
-	_space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
+//#if TARGET_IPHONE_SIMULATOR
+//	// The accelerometer always returns (0, 0, 0) on the simulator which is unhelpful.
+//	// Let's hardcode it to be always down instead.
+//	CMAcceleration gravity = {-1, 0, 0};
+//#else
+//	CMAcceleration gravity = _motionManager.accelerometerData.acceleration;
+//#endif
+//	
+//	_space.gravity = cpvmult(cpv(-gravity.y, gravity.x), GRAVITY);
 }
 
 -(CGPoint)touchLocation:(UITouch *)touch

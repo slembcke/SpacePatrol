@@ -51,6 +51,9 @@
 /// A layer bitmask that defines which objects 
 @property(nonatomic, assign) cpLayers layers;
 
+/// Get the space the body is added to.
+@property(nonatomic, readonly) ChipmunkSpace *space;
+
 /**
 	An object that this shape is associated with. You can use this get a reference to your game object or controller object from within callbacks.
 	@attention Like most @c delegate properties this is a weak reference and does not call @c retain. This prevents reference cycles from occuring.

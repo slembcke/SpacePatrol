@@ -37,7 +37,9 @@
 #define COLLISION_LAYERS_BUGGY (COLLISION_RULE_TERRAIN_BUGGY | COLLISION_RULE_BUGGY_ONLY)
 
 // Some constants for controlling the car and world:
-#define GRAVITY 1200.0f
+//#define GRAVITY 1200.0f
+#define GRAVITY_STRENGTH 6.8e10f
+#define GRAVITY_ORIGIN ((cpVect){256*32, 256*32})
 
 #define WHEEL_MASS 0.25
 #define CHASSIS_MASS 1.0

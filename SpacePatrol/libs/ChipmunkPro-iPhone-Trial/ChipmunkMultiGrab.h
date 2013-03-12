@@ -38,6 +38,7 @@
 	cpLayers _layers;
 	cpGroup _group;
 	bool (^_grabFilter)(ChipmunkShape *shape);
+	cpFloat (^_grabSort)(ChipmunkShape *shape, cpFloat depth);
 	
 	bool _pushMode, _pullMode;
 	
@@ -59,6 +60,13 @@
 /// Gives you the opportunity to further filter shapes. Return FALSE to ignore a shape.
 /// The default implementation always returns TRUE.
 @property(nonatomic, copy) bool (^grabFilter)(ChipmunkShape *shape);
+
+/// When clicking on a spot where two shapes overlap, the default behavior is to grab the shape that
+/// overlaps the grab point the most. It's possible to use a custom sorting order instead however.
+/// The block is called with each shape and the grab depth.
+/// It should return a positive float. The shape with the highest value is grabbed.
+/// The block is only called if the touch location is within a shape.
+@property(nonatomic, copy) cpFloat (^grabSort)(ChipmunkShape *shape, cpFloat depth);
 
 /// Amount of friction applied by the touch.
 /// Should be less than the grabForce. Defaults to 0.0.

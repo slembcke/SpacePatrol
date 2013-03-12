@@ -24,6 +24,8 @@
 #import "ChipmunkAutoGeometry.h"
 #import "Physics.h"
 
+#import "SatelliteBody.h"
+
 enum {
 	Z_CHASSIS,
 	Z_WHEEL,
@@ -65,7 +67,7 @@ enum {
 		
 		cpFloat radius = 0.95*sprite.contentSize.width/2.0;
 		
-		_body = [ChipmunkBody bodyWithMass:WHEEL_MASS andMoment:cpMomentForCircle(WHEEL_MASS, 0.0, radius, cpvzero)];
+		_body = [SatelliteBody bodyWithMass:WHEEL_MASS andMoment:cpMomentForCircle(WHEEL_MASS, 0.0, radius, cpvzero)];
 		
 		ChipmunkShape *shape = [ChipmunkCircleShape circleWithBody:_body radius:radius offset:cpvzero];
 		shape.friction = 1.0;
@@ -120,7 +122,7 @@ enum {
 		// The center of gravity of the body will match up with the sprite's anchor point, so use that as the offset.
 		cpFloat moment = [line momentForMass:CHASSIS_MASS offset:cpvneg(sprite.anchorPointInPoints)];
 		
-		_body = [ChipmunkBody bodyWithMass:CHASSIS_MASS andMoment:moment];
+		_body = [SatelliteBody bodyWithMass:CHASSIS_MASS andMoment:moment];
 		
 		// Simplify the outline and make a convex hull out of it.
 		ChipmunkPolyline *hull = [[line simplifyCurves:1.0] toConvexHull:1.0];
