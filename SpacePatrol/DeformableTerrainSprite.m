@@ -88,7 +88,7 @@ typedef struct Vertex {
 		// From there it figures out which tiles need to be created (or recreated if the terrain has been deformed).
 		// It completely handles creating and adding the segment shapes for a tile to the space, and removing them when the tile is uncached.
 		// The cache size is the number of tiles it will keep in memory at a time.
-		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:tileSize*_texelScale samplesPerTile:tileSize + 1 cacheSize:20];
+		_tiles = [[ChipmunkBasicTileCache alloc] initWithSampler:_sampler space:space tileSize:tileSize*_texelScale samplesPerTile:tileSize + 1 cacheSize:400];
 		// Offset the tile cache sampling locations by half a texel so it hits texel centers.
 		// Things wouldn't quite line up correctly if you didn't do this.
 		_tiles.tileOffset = cpv(-0.5*_texelScale, -0.5*_texelScale);
@@ -139,6 +139,9 @@ typedef struct Vertex {
 		// Set it to repeat on both the x and y axes.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// Enable mipmpapping
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		
 		// Load a lookup texture for perturbing the crust layer on top of the terrain.
 		// This is what gives the crust it's organic veiny look.
@@ -153,6 +156,9 @@ typedef struct Vertex {
 		// Set it to repeat on both the x and y axes.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// Enable mipmpapping
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		
 		// Load up a lookup texture that specifies how to blend the different layers based on the terrain density and crust texture.
 		_mixTexture = [[CCTextureCache sharedTextureCache] addImage:@"TerrainMix.png"];

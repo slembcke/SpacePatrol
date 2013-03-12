@@ -14,6 +14,11 @@
 		D312F1D91583D4E300E9E47F /* Icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1D21583D4E300E9E47F /* Icon72.png */; };
 		D312F1DA1583D4E300E9E47F /* Icon72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1D31583D4E300E9E47F /* Icon72@2x.png */; };
 		D324472116EF8DBC00A8B042 /* SatelliteBody.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472016EF8DBC00A8B042 /* SatelliteBody.m */; };
+		D324472516EFB32E00A8B042 /* ButtonFire.psd in Resources */ = {isa = PBXBuildFile; fileRef = D324472316EFB32E00A8B042 /* ButtonFire.psd */; };
+		D324472616EFB32E00A8B042 /* Missile.psd in Resources */ = {isa = PBXBuildFile; fileRef = D324472416EFB32E00A8B042 /* Missile.psd */; };
+		D324472816EFB35600A8B042 /* Explosion.plist in Resources */ = {isa = PBXBuildFile; fileRef = D324472716EFB35600A8B042 /* Explosion.plist */; };
+		D324472B16EFC17B00A8B042 /* MissileSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472A16EFC17B00A8B042 /* MissileSprite.m */; };
+		D324472E16EFC1B200A8B042 /* TrajectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472D16EFC1B200A8B042 /* TrajectoryNode.m */; };
 		D33D7E1016952071005BA998 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33D7E0F16952071005BA998 /* Default-568h@2x.png */; };
 		D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */; };
 		D351A41C1580112900F74BF1 /* Crust.png in Resources */ = {isa = PBXBuildFile; fileRef = D351A4191580112900F74BF1 /* Crust.png */; };
@@ -199,6 +204,13 @@
 		D312F1D31583D4E300E9E47F /* Icon72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon72@2x.png"; path = "Resources/Icon72@2x.png"; sourceTree = "<group>"; };
 		D324471F16EF8DBC00A8B042 /* SatelliteBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SatelliteBody.h; sourceTree = "<group>"; };
 		D324472016EF8DBC00A8B042 /* SatelliteBody.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SatelliteBody.m; sourceTree = "<group>"; };
+		D324472316EFB32E00A8B042 /* ButtonFire.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = ButtonFire.psd; sourceTree = "<group>"; };
+		D324472416EFB32E00A8B042 /* Missile.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Missile.psd; sourceTree = "<group>"; };
+		D324472716EFB35600A8B042 /* Explosion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Explosion.plist; sourceTree = "<group>"; };
+		D324472916EFC17A00A8B042 /* MissileSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissileSprite.h; sourceTree = "<group>"; };
+		D324472A16EFC17B00A8B042 /* MissileSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MissileSprite.m; sourceTree = "<group>"; };
+		D324472C16EFC1B200A8B042 /* TrajectoryNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrajectoryNode.h; sourceTree = "<group>"; };
+		D324472D16EFC1B200A8B042 /* TrajectoryNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrajectoryNode.m; sourceTree = "<group>"; };
 		D33D7E0F16952071005BA998 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Resources/Default-568h@2x.png"; sourceTree = "<group>"; };
 		D33F53B0157FB95A00DD9246 /* SpacePatrolLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacePatrolLayer.h; sourceTree = "<group>"; };
 		D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpacePatrolLayer.m; sourceTree = "<group>"; };
@@ -547,6 +559,9 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D324472316EFB32E00A8B042 /* ButtonFire.psd */,
+				D324472416EFB32E00A8B042 /* Missile.psd */,
+				D324472716EFB35600A8B042 /* Explosion.plist */,
 				D3F1160C1583037700B4C7B7 /* Button.psd */,
 				D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */,
 				D351A45A1582A85100F74BF1 /* Chassis.psd */,
@@ -620,6 +635,10 @@
 				D324472016EF8DBC00A8B042 /* SatelliteBody.m */,
 				D351A4621582A87A00F74BF1 /* SpaceBuggy.h */,
 				D351A4631582A87A00F74BF1 /* SpaceBuggy.m */,
+				D324472916EFC17A00A8B042 /* MissileSprite.h */,
+				D324472A16EFC17B00A8B042 /* MissileSprite.m */,
+				D324472C16EFC1B200A8B042 /* TrajectoryNode.h */,
+				D324472D16EFC1B200A8B042 /* TrajectoryNode.m */,
 				D3AAFBDB156F22DD00C67169 /* Resources */,
 				D3AAFBF3156F22DD00C67169 /* libs */,
 				D3AAFDAE156F22E300C67169 /* Supporting Files */,
@@ -1130,6 +1149,9 @@
 				D312F1D91583D4E300E9E47F /* Icon72.png in Resources */,
 				D312F1DA1583D4E300E9E47F /* Icon72@2x.png in Resources */,
 				D33D7E1016952071005BA998 /* Default-568h@2x.png in Resources */,
+				D324472516EFB32E00A8B042 /* ButtonFire.psd in Resources */,
+				D324472616EFB32E00A8B042 /* Missile.psd in Resources */,
+				D324472816EFB35600A8B042 /* Explosion.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1146,6 +1168,8 @@
 				D33F53B2157FB95A00DD9246 /* SpacePatrolLayer.m in Sources */,
 				D351A4641582A87A00F74BF1 /* SpaceBuggy.m in Sources */,
 				D324472116EF8DBC00A8B042 /* SatelliteBody.m in Sources */,
+				D324472B16EFC17B00A8B042 /* MissileSprite.m in Sources */,
+				D324472E16EFC1B200A8B042 /* TrajectoryNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

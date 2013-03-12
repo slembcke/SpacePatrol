@@ -342,4 +342,9 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 	return _chassis.body.pos;
 }
 
+-(ChipmunkBody *)body
+{
+	return _chassis.body;
+}
+
 @end

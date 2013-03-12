@@ -27,16 +27,9 @@
 #import "Physics.h"
 #import "DeformableTerrainSprite.h"
 #import "SpaceBuggy.h"
-
-enum Z_ORDER {
-	Z_WORLD,
-	Z_TERRAIN,
-	Z_BUGGY,
-	Z_EFFECTS,
-	Z_DEBUG,
-	Z_MENU,
-};
-
+#import "SatelliteBody.h"
+#import "MissileSprite.h"
+#import "TrajectoryNode.h"
 
 @implementation SpacePatrolLayer {
 	// Used for grabbing the accelerometer data
@@ -69,6 +62,10 @@ enum Z_ORDER {
 	
 	// Timer values for implementing a fixed timestep for the physics.
 	ccTime _accumulator, _fixedTime;
+	
+	bool _zoom;
+	NSDictionary *_explosion;
+	TrajectoryNode *_trajectory;
 }
 
 +(CCScene *)scene
@@ -83,6 +80,8 @@ enum Z_ORDER {
 {
 	if((self = [super init])){
 		_world = [CCNode node];
+		_world.position = ccp(240, 160);
+		_world.contentSize = CGSizeMake(1.0, 1.0);
 		[self addChild:_world z:Z_WORLD];
 		
 		_space = [[ChipmunkSpace alloc] init];
@@ -119,10 +118,9 @@ enum Z_ORDER {
 		}];
 		reset.position = ccp(50, 300);
 		
-		CCMenuItemLabel *showDebug = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Show Debug" fontName:@"Helvetica" fontSize:20] block:^(id sender){
-			_debugNode.visible ^= TRUE;
-		}];
-		showDebug.position = ccp(400, 300);
+		// TODO Memory leak.
+		CCMenuItemLabel *zoom = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Zoom" fontName:@"Helvetica" fontSize:20] target:self selector:@selector(toggleZoom)];
+		zoom.position = ccp(400, 300);
 		
 		_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
 		_goButton.selectedImage.color = ccc3(128, 128, 128);
@@ -133,14 +131,28 @@ enum Z_ORDER {
 		_stopButton.scaleX = -1.0;
 		_stopButton.position = ccp(50, 50);
 		
-		CCMenu *menu = [CCMenu menuWithItems:reset, showDebug, _goButton, _stopButton, nil];
+		CCMenuItemSprite *fire = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] target:self selector:@selector(fire)];
+		fire.selectedImage.color = ccc3(128, 128, 128);
+		fire.position = ccp(480 - 50, 150);
+		
+		CCMenu *menu = [CCMenu menuWithItems:reset, zoom, _goButton, _stopButton, fire, nil];
 		menu.position = CGPointZero;
 		[self addChild:menu z:Z_MENU];
 		
-		self.isTouchEnabled = TRUE;
+		_explosion = [NSDictionary dictionaryWithContentsOfFile:[[CCFileUtils sharedFileUtils] fullPathFromRelativePath:@"Explosion.plist"]];
+		
+		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
+		[_world addChild:_trajectory z:Z_TRAJECTORY];
+		
+		self.touchEnabled = TRUE;
 	}
 	
 	return self;
+}
+
+-(void)toggleZoom
+{
+	_zoom ^= TRUE;
 }
 
 -(void)onEnter
@@ -149,7 +161,7 @@ enum Z_ORDER {
 	_motionManager.accelerometerUpdateInterval = [CCDirector sharedDirector].animationInterval;
 	[_motionManager startAccelerometerUpdates];
 	
-	[self scheduleUpdate];
+	[self scheduleUpdateWithPriority:-100];
 	[super onEnter];
 }
 
@@ -169,7 +181,7 @@ enum Z_ORDER {
 	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
 	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
 	// I made this rect slightly smaller than the screen so you can see it adding terrain chunks if you turn on debug rendering.
-	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 200)];
+	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 1000)];
 	
 	// Warning: A mistake I made initially was to ensure the screen's rect, instead of the area around the car.
 	// This was bad because the view isn't centered on the car until after the physics is run.
@@ -224,24 +236,37 @@ enum Z_ORDER {
 	}
 }
 
+-(cpVect)muzzlePos
+{
+	ChipmunkBody *buggy = _spaceBuggy.body;
+	cpVect mount = cpv(-30.0f, 20.0f);
+	
+	return [buggy local2world:mount];
+}
+
+-(cpVect)muzzleVel
+{
+	ChipmunkBody *buggy = _spaceBuggy.body;
+	cpVect muzzle = cpv(400.0f, 400.0f);
+	
+	cpVect v_local = cpBodyGetVelAtWorldPoint(buggy.body, self.muzzlePos);
+	cpVect v_muzzle = cpvrotate(muzzle, buggy.rot);
+	
+	return cpvadd(v_local, v_muzzle);
+}
+
 -(void)update:(ccTime)dt
 {
 	[self modifyTerrain];
 	[self updateGravity];
 	
-	// Update the physics on a fixed time step.
-	// Because it's a potentially very fast game, I'm using a pretty small timestep.
-	// This ensures that everything is very responsive.
-	// It also avoids missed collisions as Chipmunk doesn't support swept collisions (yet).
-	ccTime fixed_dt = 1.0/240.0;
-	
 	// Add the current dynamic timestep to the accumulator.
 	_accumulator += dt;
 	// Subtract off fixed-sized chunks of time from the accumulator and step
-	while(_accumulator > fixed_dt){
-		[self tick:fixed_dt];
-		_accumulator -= fixed_dt;
-		_fixedTime += fixed_dt;
+	while(_accumulator > FIXED_DT){
+		[self tick:FIXED_DT];
+		_accumulator -= FIXED_DT;
+		_fixedTime += FIXED_DT;
 	}
 	
 	// Resync the space buggy's sprites.
@@ -255,8 +280,40 @@ enum Z_ORDER {
 		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, _terrain.width - winSize.width/2.0, _terrain.height - winSize.height/2.0);
 		
 		// TODO Should smooth this out better to avoid the pops when releasing the buggy.
-		_world.position = cpvsub(cpv(240, 160), cpBBClampVect(clampingBB, _spaceBuggy.pos));
+		cpVect pos = cpBBClampVect(clampingBB, _spaceBuggy.pos);
+		_world.anchorPoint = pos;
+		_world.rotation = CC_RADIANS_TO_DEGREES(cpvtoangle(cpvsub(pos, GRAVITY_ORIGIN)) - M_PI_2);
 	}
+	
+	float targetScale = (_zoom ? 1.0/8.0 : 1.0);
+	_world.scale = _world.scale*pow(targetScale/_world.scale, 1.0 - pow(0.1, dt/0.25));
+	
+	[_trajectory setPos:self.muzzlePos muzzleVelocity:self.muzzleVel];
+}
+
+-(void)fire
+{
+//	CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
+//	explosion.position = _spaceBuggy.pos;
+//	explosion.autoRemoveOnFinish = TRUE;
+//	[_world addChild:explosion];
+//	
+//	[_terrain modifyTerrainAt:_spaceBuggy.pos radius:300.0 remove:TRUE];
+//			
+//	ChipmunkBody *missile = [_space add:[SatelliteBody bodyWithMass:0.1 andMoment:INFINITY]];
+//	missile.pos = [buggy local2world:mount];
+//	missile.vel = cpvadd(v_local, v_muzzle);
+//	
+//	ChipmunkCircleShape *shape = [_space add:[ChipmunkCircleShape circleWithBody:missile radius:16.0f offset:cpvzero]];
+//	shape.group = PhysicsIdentifier(BUGGY);
+	
+	MissileSprite *missile = [[MissileSprite alloc] initAtPos:self.muzzlePos vel:self.muzzleVel];
+	[_space add:missile];
+	[_world addChild:missile];
+	
+	ChipmunkBody *buggy = _spaceBuggy.body;
+	ChipmunkBody *mbody = missile.body;
+	[buggy applyImpulse:cpvmult(mbody.vel, -mbody.mass) offset:cpvsub(self.muzzlePos, buggy.pos)];
 }
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

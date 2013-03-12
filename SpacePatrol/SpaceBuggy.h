@@ -25,6 +25,9 @@
 
 @interface SpaceBuggy : NSObject<ChipmunkObject>
 
+// The body of the chassis of the buggy.
+@property(nonatomic, readonly) ChipmunkBody *body;
+
 // The position of the chassis of the buggy.
 @property(nonatomic, readonly) cpVect pos;
 

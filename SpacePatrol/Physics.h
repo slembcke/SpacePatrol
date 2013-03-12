@@ -19,8 +19,6 @@
  * SOFTWARE.
  */
 
-#import <Foundation/Foundation.h>
-
 // I usually like to make a Physics.h/m where I throw some of my physics related utility functions and constants.
 
 // Cocoa doesn't seem to have a function that can intern strings.
@@ -36,10 +34,17 @@
 #define COLLISION_LAYERS_TERRAIN (COLLISION_RULE_TERRAIN_BUGGY)
 #define COLLISION_LAYERS_BUGGY (COLLISION_RULE_TERRAIN_BUGGY | COLLISION_RULE_BUGGY_ONLY)
 
+// Update the physics on a fixed time step.
+// Because it's a potentially very fast game, I'm using a pretty small timestep.
+// This ensures that everything is very responsive.
+// It also avoids missed collisions as Chipmunk doesn't support swept collisions (yet).
+#define FIXED_DT (1.0f/240.0f)
+
 // Some constants for controlling the car and world:
 //#define GRAVITY 1200.0f
 #define GRAVITY_STRENGTH 6.8e10f
 #define GRAVITY_ORIGIN ((cpVect){256*32, 256*32})
+#define PLANET_RADIUS 7400.0f
 
 #define WHEEL_MASS 0.25
 #define CHASSIS_MASS 1.0

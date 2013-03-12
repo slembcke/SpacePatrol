@@ -31,9 +31,13 @@
 	// distance, and directed toward the origin. The central planet is assumed
 	// to be massive enough that it affects the satellites but not vice versa.
 	cpVect delta = cpvsub(self.pos, GRAVITY_ORIGIN);
-	cpFloat sqdist = cpvlengthsq(delta);
-	cpVect g = cpvmult(delta, -GRAVITY_STRENGTH/(sqdist*cpfsqrt(sqdist)));
+	cpFloat dist = cpvlength(delta);
 	
+	// Gravity decreases linearly when inside the planet.
+	cpFloat coef = cpfmin(dist/PLANET_RADIUS, 1.0f);
+	cpFloat r = cpfmax(dist, PLANET_RADIUS);
+	
+	cpVect g = cpvmult(delta, -coef*GRAVITY_STRENGTH/(r*r*r));
 	[super updateVelocity:dt gravity:g damping:damping];
 }
 

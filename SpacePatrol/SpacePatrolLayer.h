@@ -22,6 +22,17 @@
 #import "ObjectiveChipmunk.h"
 #import "cocos2d.h"
 
+enum Z_ORDER {
+	Z_WORLD,
+	Z_TERRAIN,
+	Z_TRAJECTORY,
+	Z_MISSILE,
+	Z_BUGGY,
+	Z_EFFECTS,
+	Z_DEBUG,
+	Z_MENU,
+};
+
 @interface SpacePatrolLayer : CCLayer
 
 +(CCScene *)scene;
