@@ -248,7 +248,7 @@
 -(cpVect)muzzleVel
 {
 	ChipmunkBody *buggy = _spaceBuggy.body;
-	cpVect muzzle = cpv(200.0f, 600.0f);
+	cpVect muzzle = cpv(300.0f, 600.0f);
 	
 	cpVect v_local = cpBodyGetVelAtWorldPoint(buggy.body, self.muzzlePos);
 	cpVect v_muzzle = cpvrotate(muzzle, buggy.rot);

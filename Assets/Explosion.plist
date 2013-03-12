@@ -31,7 +31,7 @@
 	<key>finishColorVarianceRed</key>
 	<real>0.0</real>
 	<key>finishParticleSize</key>
-	<real>23</real>
+	<real>82.65789794921875</real>
 	<key>finishParticleSizeVariance</key>
 	<real>0.0</real>
 	<key>gravityx</key>
@@ -39,7 +39,7 @@
 	<key>gravityy</key>
 	<real>0.0</real>
 	<key>maxParticles</key>
-	<real>600</real>
+	<real>200</real>
 	<key>maxRadius</key>
 	<real>100</real>
 	<key>maxRadiusVariance</key>
@@ -53,7 +53,7 @@
 	<key>radialAccelVariance</key>
 	<real>0.0</real>
 	<key>radialAcceleration</key>
-	<real>-598.16998291015625</real>
+	<real>-903.06329345703125</real>
 	<key>rotatePerSecond</key>
 	<real>0.0</real>
 	<key>rotatePerSecondVariance</key>
@@ -75,11 +75,11 @@
 	<key>sourcePositiony</key>
 	<real>250.67999267578125</real>
 	<key>speed</key>
-	<real>124.01999664306641</real>
+	<real>531.45556640625</real>
 	<key>speedVariance</key>
-	<real>60</real>
+	<real>342.46505737304688</real>
 	<key>startColorAlpha</key>
-	<real>0.40999999642372131</real>
+	<real>0.3513997495174408</real>
 	<key>startColorBlue</key>
 	<real>0.0</real>
 	<key>startColorGreen</key>
@@ -95,13 +95,13 @@
 	<key>startColorVarianceRed</key>
 	<real>0.6600000262260437</real>
 	<key>startParticleSize</key>
-	<real>7</real>
+	<real>64.815788269042969</real>
 	<key>startParticleSizeVariance</key>
 	<real>1</real>
 	<key>tangentialAccelVariance</key>
-	<real>0.0</real>
+	<real>1000</real>
 	<key>tangentialAcceleration</key>
-	<real>0.0</real>
+	<real>2.6726973056793213</real>
 	<key>textureFileName</key>
 	<string>particleTexture.png</string>
 	<key>textureImageData</key>
