@@ -19,14 +19,16 @@
 		self.position = pos;
 		self.zOrder = Z_MISSILE;
 		
-		self.body = [SatelliteBody bodyWithMass:0.2 andMoment:INFINITY];
-		self.body.pos = pos;
-		self.body.vel = vel;
+		ChipmunkBody *body = self.body = [SatelliteBody bodyWithMass:0.2 andMoment:INFINITY];
+		body.pos = pos;
+		body.vel = vel;
+		body.data = self;
 		
-		self.shape = [ChipmunkCircleShape circleWithBody:self.body radius:16.0f offset:cpvzero];
-		self.shape.group = PhysicsIdentifier(BUGGY);
+		ChipmunkShape *shape = self.shape = [ChipmunkCircleShape circleWithBody:self.body radius:16.0f offset:cpvzero];
+		shape.group = PhysicsIdentifier(BUGGY);
+		shape.collisionType = PhysicsIdentifier(MISSILE);
 		
-		_chipmunkObjects = @[self.body, self.shape];
+		_chipmunkObjects = @[body, shape];
 	}
 	
 	return self;

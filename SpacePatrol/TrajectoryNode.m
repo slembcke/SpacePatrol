@@ -50,7 +50,8 @@
 			break;
 		} else if(i%15==0){
 			// Otherwise, just draw a dot every 10 frames along the path.
-			[self drawDot:body->p radius:5.0 color:ccc4f(0, 0, 0, 0.5)];
+			float alpha = MIN(i/500.0f, 0.5f);
+			[self drawDot:body->p radius:5.0f color:ccc4f(0, 0, 0, alpha)];
 		}
 	}
 	

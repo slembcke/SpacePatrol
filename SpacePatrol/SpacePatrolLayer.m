@@ -86,6 +86,7 @@
 		
 		_space = [[ChipmunkSpace alloc] init];
 //		_space.gravity = cpv(0.0f, -GRAVITY);
+		[_space addCollisionHandler:self typeA:PhysicsIdentifier(MISSILE) typeB:PhysicsIdentifier(TERRAIN) begin:@selector(missileGroundBegin:space:) preSolve:nil postSolve:nil separate:nil];
 		
 		_multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:_space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
 		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
@@ -247,7 +248,7 @@
 -(cpVect)muzzleVel
 {
 	ChipmunkBody *buggy = _spaceBuggy.body;
-	cpVect muzzle = cpv(400.0f, 400.0f);
+	cpVect muzzle = cpv(200.0f, 600.0f);
 	
 	cpVect v_local = cpBodyGetVelAtWorldPoint(buggy.body, self.muzzlePos);
 	cpVect v_muzzle = cpvrotate(muzzle, buggy.rot);
@@ -293,20 +294,6 @@
 
 -(void)fire
 {
-//	CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
-//	explosion.position = _spaceBuggy.pos;
-//	explosion.autoRemoveOnFinish = TRUE;
-//	[_world addChild:explosion];
-//	
-//	[_terrain modifyTerrainAt:_spaceBuggy.pos radius:300.0 remove:TRUE];
-//			
-//	ChipmunkBody *missile = [_space add:[SatelliteBody bodyWithMass:0.1 andMoment:INFINITY]];
-//	missile.pos = [buggy local2world:mount];
-//	missile.vel = cpvadd(v_local, v_muzzle);
-//	
-//	ChipmunkCircleShape *shape = [_space add:[ChipmunkCircleShape circleWithBody:missile radius:16.0f offset:cpvzero]];
-//	shape.group = PhysicsIdentifier(BUGGY);
-	
 	MissileSprite *missile = [[MissileSprite alloc] initAtPos:self.muzzlePos vel:self.muzzleVel];
 	[_space add:missile];
 	[_world addChild:missile];
@@ -314,6 +301,27 @@
 	ChipmunkBody *buggy = _spaceBuggy.body;
 	ChipmunkBody *mbody = missile.body;
 	[buggy applyImpulse:cpvmult(mbody.vel, -mbody.mass) offset:cpvsub(self.muzzlePos, buggy.pos)];
+}
+
+-(bool)missileGroundBegin:(cpArbiter *)arbiter space:(ChipmunkSpace*)space
+{
+	CHIPMUNK_ARBITER_GET_BODIES(arbiter, missileBody, groundBody);
+	MissileSprite *missile = missileBody.data;
+	
+	[space addPostStepBlock:^{
+		[_world removeChild:missile cleanup:TRUE];
+		[_space remove:missile];
+		
+		CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
+		explosion.position = missileBody.pos;
+		explosion.zOrder = Z_EFFECTS;
+		explosion.autoRemoveOnFinish = TRUE;
+		[_world addChild:explosion];
+		
+		[_terrain modifyTerrainAt:missileBody.pos radius:300.0 remove:TRUE];
+	} key:missile];
+	
+	return FALSE;
 }
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

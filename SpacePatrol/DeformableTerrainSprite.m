@@ -97,6 +97,7 @@ typedef struct Vertex {
 		// Set some of the properties for the segments it will generate.
 		_tiles.segmentLayers = COLLISION_LAYERS_TERRAIN;
 		_tiles.segmentRadius = 5.0;
+		_tiles.segmentCollisionType = PhysicsIdentifier(TERRAIN);
 		
 		// OK! that was sort of a lot of coordinates to get lined up correctly. In case you missed some of them:
 		// 1) Align the CGContext's drawing coordinates with Chipmunk/Cocos coordinates.
