@@ -31,6 +31,8 @@
 #import "MissileSprite.h"
 #import "TrajectoryNode.h"
 
+#define ENSURE_RANGE 1000.0f
+
 @implementation SpacePatrolLayer {
 	// Used for grabbing the accelerometer data
 	CMMotionManager *_motionManager;
@@ -66,6 +68,7 @@
 	bool _zoom;
 	NSDictionary *_explosion;
 	TrajectoryNode *_trajectory;
+	NSMutableArray *_missiles;
 }
 
 +(CCScene *)scene
@@ -141,6 +144,7 @@
 		[self addChild:menu z:Z_MENU];
 		
 		_explosion = [NSDictionary dictionaryWithContentsOfFile:[[CCFileUtils sharedFileUtils] fullPathFromRelativePath:@"Explosion.plist"]];
+		_missiles = [NSMutableArray array];
 		
 		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
 		[_world addChild:_trajectory z:Z_TRAJECTORY];
@@ -182,7 +186,7 @@
 	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
 	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
 	// I made this rect slightly smaller than the screen so you can see it adding terrain chunks if you turn on debug rendering.
-	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, 1000)];
+	[_terrain.tiles ensureRect:cpBBNewForCircle(_spaceBuggy.pos, ENSURE_RANGE)];
 	
 	// Warning: A mistake I made initially was to ensure the screen's rect, instead of the area around the car.
 	// This was bad because the view isn't centered on the car until after the physics is run.
@@ -273,6 +277,7 @@
 	// Resync the space buggy's sprites.
 	// Take a look at the SpaceBuggy class to see why I don't just use ChipmunkSprites.
 	[_spaceBuggy sync];
+	cpVect buggyPos = _spaceBuggy.pos;
 	
 	// Scroll the screen as long as we aren't dragging the car.
 	if(_multiGrab.grabs.count == 0){
@@ -281,7 +286,7 @@
 		cpBB clampingBB = cpBBNew(winSize.width/2.0, winSize.height/2.0, _terrain.width - winSize.width/2.0, _terrain.height - winSize.height/2.0);
 		
 		// TODO Should smooth this out better to avoid the pops when releasing the buggy.
-		cpVect pos = cpBBClampVect(clampingBB, _spaceBuggy.pos);
+		cpVect pos = cpBBClampVect(clampingBB, buggyPos);
 		_world.anchorPoint = pos;
 		_world.rotation = CC_RADIANS_TO_DEGREES(cpvtoangle(cpvsub(pos, GRAVITY_ORIGIN)) - M_PI_2);
 	}
@@ -290,6 +295,13 @@
 	_world.scale = _world.scale*pow(targetScale/_world.scale, 1.0 - pow(0.1, dt/0.25));
 	
 	[_trajectory setPos:self.muzzlePos muzzleVelocity:self.muzzleVel];
+	
+	for(MissileSprite *missile in [_missiles copy]){
+		// Destroy the missiles when they get too far away.
+		if(cpvdist(buggyPos, missile.body.pos) > ENSURE_RANGE){
+			[self destructMissile:missile];
+		}
+	}
 }
 
 -(void)fire
@@ -297,10 +309,26 @@
 	MissileSprite *missile = [[MissileSprite alloc] initAtPos:self.muzzlePos vel:self.muzzleVel];
 	[_space add:missile];
 	[_world addChild:missile];
+	[_missiles addObject:missile];
 	
 	ChipmunkBody *buggy = _spaceBuggy.body;
 	ChipmunkBody *mbody = missile.body;
 	[buggy applyImpulse:cpvmult(mbody.vel, -mbody.mass) offset:cpvsub(self.muzzlePos, buggy.pos)];
+}
+
+-(void)destructMissile:(MissileSprite *)missile
+{
+	CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
+	explosion.position = missile.body.pos;
+	explosion.zOrder = Z_EFFECTS;
+	explosion.autoRemoveOnFinish = TRUE;
+	[_world addChild:explosion];
+	
+	[_terrain modifyTerrainAt:missile.body.pos radius:300.0 remove:TRUE];
+	
+	[_world removeChild:missile cleanup:TRUE];
+	[_space remove:missile];
+	[_missiles removeObject:missile];
 }
 
 -(bool)missileGroundBegin:(cpArbiter *)arbiter space:(ChipmunkSpace*)space
@@ -308,18 +336,7 @@
 	CHIPMUNK_ARBITER_GET_BODIES(arbiter, missileBody, groundBody);
 	MissileSprite *missile = missileBody.data;
 	
-	[space addPostStepBlock:^{
-		[_world removeChild:missile cleanup:TRUE];
-		[_space remove:missile];
-		
-		CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
-		explosion.position = missileBody.pos;
-		explosion.zOrder = Z_EFFECTS;
-		explosion.autoRemoveOnFinish = TRUE;
-		[_world addChild:explosion];
-		
-		[_terrain modifyTerrainAt:missileBody.pos radius:300.0 remove:TRUE];
-	} key:missile];
+	[space addPostStepBlock:^{[self destructMissile:missile];} key:missile];
 	
 	return FALSE;
 }
