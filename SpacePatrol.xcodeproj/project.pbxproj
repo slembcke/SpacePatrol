@@ -16,7 +16,6 @@
 		D324472116EF8DBC00A8B042 /* SatelliteBody.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472016EF8DBC00A8B042 /* SatelliteBody.m */; };
 		D324472516EFB32E00A8B042 /* ButtonFire.psd in Resources */ = {isa = PBXBuildFile; fileRef = D324472316EFB32E00A8B042 /* ButtonFire.psd */; };
 		D324472616EFB32E00A8B042 /* Missile.psd in Resources */ = {isa = PBXBuildFile; fileRef = D324472416EFB32E00A8B042 /* Missile.psd */; };
-		D324472816EFB35600A8B042 /* Explosion.plist in Resources */ = {isa = PBXBuildFile; fileRef = D324472716EFB35600A8B042 /* Explosion.plist */; };
 		D324472B16EFC17B00A8B042 /* MissileSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472A16EFC17B00A8B042 /* MissileSprite.m */; };
 		D324472E16EFC1B200A8B042 /* TrajectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D324472D16EFC1B200A8B042 /* TrajectoryNode.m */; };
 		D33D7E1016952071005BA998 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33D7E0F16952071005BA998 /* Default-568h@2x.png */; };
@@ -35,6 +34,7 @@
 		D37893ED15769BFD006CBEE8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37893EC15769BFD006CBEE8 /* ImageIO.framework */; };
 		D38FE0EA157EE03200E47812 /* DeformableTerrain.vsh in Resources */ = {isa = PBXBuildFile; fileRef = D38FE0E7157EDF4F00E47812 /* DeformableTerrain.vsh */; };
 		D38FE0F7157FB3EE00E47812 /* Hole.png in Resources */ = {isa = PBXBuildFile; fileRef = D38FE0F6157FB3EE00E47812 /* Hole.png */; };
+		D39C8CC816F3785900A9F5D7 /* Explosion.psd in Resources */ = {isa = PBXBuildFile; fileRef = D39C8CC716F3785900A9F5D7 /* Explosion.psd */; };
 		D3AAFBC9156F22DD00C67169 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3AAFBC8156F22DD00C67169 /* QuartzCore.framework */; };
 		D3AAFBCB156F22DD00C67169 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3AAFBCA156F22DD00C67169 /* OpenGLES.framework */; };
 		D3AAFBCD156F22DD00C67169 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3AAFBCC156F22DD00C67169 /* OpenAL.framework */; };
@@ -206,7 +206,6 @@
 		D324472016EF8DBC00A8B042 /* SatelliteBody.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SatelliteBody.m; sourceTree = "<group>"; };
 		D324472316EFB32E00A8B042 /* ButtonFire.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = ButtonFire.psd; sourceTree = "<group>"; };
 		D324472416EFB32E00A8B042 /* Missile.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Missile.psd; sourceTree = "<group>"; };
-		D324472716EFB35600A8B042 /* Explosion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Explosion.plist; sourceTree = "<group>"; };
 		D324472916EFC17A00A8B042 /* MissileSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissileSprite.h; sourceTree = "<group>"; };
 		D324472A16EFC17B00A8B042 /* MissileSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MissileSprite.m; sourceTree = "<group>"; };
 		D324472C16EFC1B200A8B042 /* TrajectoryNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrajectoryNode.h; sourceTree = "<group>"; };
@@ -231,6 +230,7 @@
 		D38FE0D11579688900E47812 /* libarclite_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarclite_iphonesimulator.a; path = usr/lib/arc/libarclite_iphonesimulator.a; sourceTree = DEVELOPER_DIR; };
 		D38FE0E7157EDF4F00E47812 /* DeformableTerrain.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DeformableTerrain.vsh; sourceTree = "<group>"; };
 		D38FE0F6157FB3EE00E47812 /* Hole.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Hole.png; sourceTree = "<group>"; };
+		D39C8CC716F3785900A9F5D7 /* Explosion.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Explosion.psd; sourceTree = "<group>"; };
 		D3AAFBC4156F22DD00C67169 /* SpacePatrol.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpacePatrol.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3AAFBC8156F22DD00C67169 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		D3AAFBCA156F22DD00C67169 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -559,9 +559,9 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D39C8CC716F3785900A9F5D7 /* Explosion.psd */,
 				D324472316EFB32E00A8B042 /* ButtonFire.psd */,
 				D324472416EFB32E00A8B042 /* Missile.psd */,
-				D324472716EFB35600A8B042 /* Explosion.plist */,
 				D3F1160C1583037700B4C7B7 /* Button.psd */,
 				D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */,
 				D351A45A1582A85100F74BF1 /* Chassis.psd */,
@@ -1151,7 +1151,7 @@
 				D33D7E1016952071005BA998 /* Default-568h@2x.png in Resources */,
 				D324472516EFB32E00A8B042 /* ButtonFire.psd in Resources */,
 				D324472616EFB32E00A8B042 /* Missile.psd in Resources */,
-				D324472816EFB35600A8B042 /* Explosion.plist in Resources */,
+				D39C8CC816F3785900A9F5D7 /* Explosion.psd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

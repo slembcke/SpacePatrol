@@ -46,6 +46,7 @@
 	CCPhysicsDebugNode *_debugNode;
 	// The menu buttons for controlling the car.
 	CCMenuItemSprite *_goButton, *_stopButton;
+	CCMenuItemSprite *_fireButton;
 	
 	// The CCNode that we'll be adding the terrain and car to.
 	CCNode *_world;
@@ -66,9 +67,10 @@
 	ccTime _accumulator, _fixedTime;
 	
 	bool _zoom;
-	NSDictionary *_explosion;
 	TrajectoryNode *_trajectory;
 	NSMutableArray *_missiles;
+	
+	int _ticks;
 }
 
 +(CCScene *)scene
@@ -102,7 +104,7 @@
 			// We need to find the terrain's ground level so we can drop the buggy at the surface.
 			// You can't use a raycast because there is no geometry in space until the tile cache adds it.
 			// Instead, we'll sample upwards along the terrain's density to find somewhere where the density is low (where there isn't dirt).
-			cpVect pos = cpv(256*_terrain.texelSize, 256*_terrain.texelSize);
+			cpVect pos = GRAVITY_ORIGIN;
 			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
@@ -116,34 +118,47 @@
 		[_world addChild:_debugNode z:Z_DEBUG];
 		_debugNode.visible = FALSE;
 		
-		// Show some menu buttons.
-		CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){
-			[[CCDirector sharedDirector] replaceScene:[[SpacePatrolLayer class] scene]];
-		}];
-		reset.position = ccp(50, 300);
+		{
+			// Show some menu buttons.
+			CCMenuItemLabel *reset = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Reset" fontName:@"Helvetica" fontSize:20] block:^(id sender){
+				[[CCDirector sharedDirector] replaceScene:[[SpacePatrolLayer class] scene]];
+			}];
+			reset.position = ccp(50, 300);
+			
+			// TODO Memory leak.
+			CCMenuItemLabel *zoom = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Zoom" fontName:@"Helvetica" fontSize:20] target:self selector:@selector(toggleZoom)];
+			zoom.position = ccp(400, 300);
+			
+			CCMenu *menu = [CCMenu menuWithItems:reset, zoom, nil];
+			menu.position = CGPointZero;
+			[self addChild:menu z:Z_MENU];
+		}
 		
-		// TODO Memory leak.
-		CCMenuItemLabel *zoom = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Zoom" fontName:@"Helvetica" fontSize:20] target:self selector:@selector(toggleZoom)];
-		zoom.position = ccp(400, 300);
+		{
+			_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+			_goButton.selectedImage.color = ccc3(128, 128, 128);
+			_goButton.position = ccp(480 - 50, 50);
+			
+			_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+			_stopButton.selectedImage.color = ccc3(128, 128, 128);
+			_stopButton.scaleX = -1.0;
+			_stopButton.position = ccp(50, 50);
+			
+			CCMenu *menu = [CCMenu menuWithItems:_goButton, _stopButton, nil];
+			menu.position = CGPointZero;
+			[self addChild:menu z:Z_MENU];
+		}
 		
-		_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-		_goButton.selectedImage.color = ccc3(128, 128, 128);
-		_goButton.position = ccp(480 - 50, 50);
+		{
+			_fireButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFire.png"]];
+			_fireButton.selectedImage.color = ccc3(128, 128, 128);
+			_fireButton.position = ccp(480 - 50, 150);
+			
+			CCMenu *menu = [CCMenu menuWithItems:_fireButton, nil];
+			menu.position = CGPointZero;
+			[self addChild:menu z:Z_MENU];
+		}
 		
-		_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-		_stopButton.selectedImage.color = ccc3(128, 128, 128);
-		_stopButton.scaleX = -1.0;
-		_stopButton.position = ccp(50, 50);
-		
-		CCMenuItemSprite *fire = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] target:self selector:@selector(fire)];
-		fire.selectedImage.color = ccc3(128, 128, 128);
-		fire.position = ccp(480 - 50, 150);
-		
-		CCMenu *menu = [CCMenu menuWithItems:reset, zoom, _goButton, _stopButton, fire, nil];
-		menu.position = CGPointZero;
-		[self addChild:menu z:Z_MENU];
-		
-		_explosion = [NSDictionary dictionaryWithContentsOfFile:[[CCFileUtils sharedFileUtils] fullPathFromRelativePath:@"Explosion.plist"]];
 		_missiles = [NSMutableArray array];
 		
 		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
@@ -182,6 +197,10 @@
 // This method is called 240 times per second.
 -(void)tick:(ccTime)fixed_dt
 {
+	if(_fireButton.isSelected && _ticks%20 == 0){
+		[self fire];
+	}
+	
 	// Only terrain geometry that exists inside this "ensure" rect is guaranteed to exist.
 	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
 	// Outside of this rect terrain geometry is not guaranteed to be current or exist at all.
@@ -198,6 +217,7 @@
 	[_spaceBuggy update:fixed_dt throttle:throttle];
 	
 	[_space step:fixed_dt];
+	_ticks++;
 }
 
 -(void)updateGravity
@@ -222,7 +242,7 @@
 {
 	if(!_currentDeformTouch) return;
 	
-	CGFloat radius = 100.0;
+	CGFloat radius = (_zoom ? 4.0 : 1.0)*100.0;
 	CGFloat threshold = 0.025*radius;
 	
 	// UITouch objects are persistent and continue to be updated for as long as the touch is occuring.
@@ -318,11 +338,18 @@
 
 -(void)destructMissile:(MissileSprite *)missile
 {
-	CCParticleSystem *explosion = [[CCParticleSystemQuad alloc] initWithDictionary:_explosion];
-	explosion.position = missile.body.pos;
+	CCSprite *explosion = [CCSprite spriteWithFile:@"Explosion.png"];
+	explosion.position = missile.position;
 	explosion.zOrder = Z_EFFECTS;
-	explosion.autoRemoveOnFinish = TRUE;
 	[_world addChild:explosion];
+	
+	ccTime duration = 0.15;
+	[explosion runAction:[CCFadeOut actionWithDuration:duration]];
+	[explosion runAction:[CCSequence actions:
+		[CCScaleTo actionWithDuration:duration scale:0.5],
+		[CCCallBlock actionWithBlock:^{[explosion removeFromParentAndCleanup:TRUE];}],
+		nil
+	]];
 	
 	[_terrain modifyTerrainAt:missile.body.pos radius:300.0 remove:TRUE];
 	

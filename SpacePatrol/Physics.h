@@ -42,9 +42,9 @@
 
 // Some constants for controlling the car and world:
 //#define GRAVITY 1200.0f
-#define GRAVITY_STRENGTH 6.8e10f
-#define GRAVITY_ORIGIN ((cpVect){256*32, 256*32})
-#define PLANET_RADIUS 7400.0f
+#define GRAVITY_STRENGTH 2e10f
+#define GRAVITY_ORIGIN ((cpVect){128*32, 128*32})
+#define PLANET_RADIUS (100*32)
 
 #define WHEEL_MASS 0.25
 #define CHASSIS_MASS 1.0
