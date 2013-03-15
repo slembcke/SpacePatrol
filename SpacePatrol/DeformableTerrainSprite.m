@@ -198,15 +198,13 @@ typedef struct Vertex {
 		// I wanted to read the color out of the crust perturbing lookup texture, but Cocos's premultiplied alpha loading breaks that.
 		// I could have created a PVR file for the texture... but that sounded like a lot of work to set up for one texture.
 		glUniform4f(glGetUniformLocation(shader->program_, "crust_color"), 156.0/255.0, 122.0/255.0, 92.0/255.0, 1.0);
+		glUniform4f(glGetUniformLocation(shader->program_, "bg_color"), SKY_COLOR);
 		
 		// Bind the texture units in the shader.
 		glUniform1i(glGetUniformLocation(shader->program_, "density_texture"), 0);
 		glUniform1i(glGetUniformLocation(shader->program_, "terrain_texture"), 1);
 		glUniform1i(glGetUniformLocation(shader->program_, "crust_texture"), 2);
 		glUniform1i(glGetUniformLocation(shader->program_, "mix_texture"), 3);
-		glUniform1i(glGetUniformLocation(shader->program_, "sky_texture"), 4);
-		glUniform1i(glGetUniformLocation(shader->program_, "parallax_texture"), 5);
-		
 		
 		// Create the VAO for our node.
     glGenVertexArraysOES(1, &_vao);

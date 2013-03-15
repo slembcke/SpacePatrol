@@ -282,14 +282,13 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 		// The motor is modeled like an electric motor where the torque decreases inversely as the rate approaches the maximum.
 		// It's simple to code up and feels nice.
 		_motor.maxForce = cpfclamp01(1.0 - (_chassis.body.angVel - _rearWheel.body.angVel)/ENGINE_MAX_W)*ENGINE_MAX_TORQUE;
+		_motor.rate = ENGINE_MAX_W;
 		// Set the brakes to apply the baseline rolling friction torque.
 		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
 	} else if(throttle < 0){
-		// Disable the motor.
-		_motor.maxForce = 0.0;
-		// It would be a pretty good idea to give the front and rear brakes different torques.
-		// The buggy as is now has a tendency to tip forward when braking hard.
-		_rearBrake.maxForce = _frontBrake.maxForce = BRAKING_TORQUE;
+		_motor.maxForce = cpfclamp01(1.0 - (_chassis.body.angVel - _rearWheel.body.angVel)/ENGINE_MAX_W)*ENGINE_MAX_TORQUE;
+		_motor.rate = -ENGINE_MAX_W;
+		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
 	} else {
 		// Disable the motor.
 		_motor.maxForce = 0.0;

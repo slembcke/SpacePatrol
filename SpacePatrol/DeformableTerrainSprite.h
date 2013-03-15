@@ -24,6 +24,8 @@
 
 #import "cocos2d.h"
 
+#define SKY_COLOR 29.0/255.0, 63.0/255.0, 75.0/255.0, 1.0
+
 @interface DeformableTerrainSprite : CCNode
 
 // How much to upscale the terrain when rendering it to the screen.

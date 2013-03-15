@@ -183,6 +183,8 @@
 	
 	[self scheduleUpdateWithPriority:-100];
 	[super onEnter];
+	
+	glClearColor(SKY_COLOR);
 }
 
 -(void)onExit
