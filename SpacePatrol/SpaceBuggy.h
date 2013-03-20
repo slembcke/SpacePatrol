@@ -42,7 +42,7 @@
 -(id)initWithPosition:(cpVect)pos;
 
 // Update the motors attached to the buggy.
--(void)update:(ccTime)dt throttle:(int)throttle;
+-(void)update:(ccTime)dt throttle:(int)throttle flip:(bool)flip;
 
 // Resync the sprite and body positions.
 // Normally you would use something like ChipmunkSprite to do this.

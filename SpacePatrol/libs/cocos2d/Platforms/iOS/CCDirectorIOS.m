@@ -289,41 +289,48 @@ CGFloat	__ccContentScaleFactor = 1;
 {
 	NSAssert( [view_ respondsToSelector:@selector(setContentScaleFactor:)], @"cocos2d v2.0+ runs on iOS 4 or later");
 
-	[view_ setContentScaleFactor: __ccContentScaleFactor];
+	[view_ setContentScaleFactor: __ccContentScaleFactor/CC_CONTENT_SCALE_MULTIPLIER];
 	isContentScaleSupported_ = YES;
 }
 
 -(BOOL) enableRetinaDisplay:(BOOL)enabled
 {
-	// Already enabled ?
-	if( enabled && __ccContentScaleFactor == 2 )
-		return YES;
+//	// Already enabled ?
+//	if( enabled && __ccContentScaleFactor == 2*CC_CONTENT_SCALE_MULTIPLIER )
+//		return YES;
+//
+//	// Already disabled
+//	if( ! enabled && __ccContentScaleFactor == 1*CC_CONTENT_SCALE_MULTIPLIER )
+//		return YES;
+//
+//	// setContentScaleFactor is not supported
+//	if (! [view_ respondsToSelector:@selector(setContentScaleFactor:)])
+//		return NO;
+//
+//	// SD device
+//	if ([[UIScreen mainScreen] scale] == 1.0)
+//		return NO;
+//
+	enabled = enabled &&
+		[view_ respondsToSelector:@selector(setContentScaleFactor:)] &&
+		[[UIScreen mainScreen] scale] == 2.0;
+	
+	float newScale = (enabled ? 2 : 1)*CC_CONTENT_SCALE_MULTIPLIER;
+	if(CC_CONTENT_SCALE_FACTOR() != newScale){
+		[self setContentScaleFactor:newScale];
 
-	// Already disabled
-	if( ! enabled && __ccContentScaleFactor == 1 )
-		return YES;
+		// Load Hi-Res FPS label
+		[self createStatsLabel];
+	}
 
-	// setContentScaleFactor is not supported
-	if (! [view_ respondsToSelector:@selector(setContentScaleFactor:)])
-		return NO;
-
-	// SD device
-	if ([[UIScreen mainScreen] scale] == 1.0)
-		return NO;
-
-	float newScale = enabled ? 2 : 1;
-	[self setContentScaleFactor:newScale];
-
-	// Load Hi-Res FPS label
-	[self createStatsLabel];
-
-	return YES;
+	return enabled;
 }
 
 // overriden, don't call super
 -(void) reshapeProjection:(CGSize)size
 {
-	winSizeInPoints_ = [view_ bounds].size;
+	CGSize s = [view_ bounds].size;
+	winSizeInPoints_ = CGSizeMake(s.width/CC_CONTENT_SCALE_MULTIPLIER, s.height/CC_CONTENT_SCALE_MULTIPLIER);
 	winSizeInPixels_ = CGSizeMake(winSizeInPoints_.width * __ccContentScaleFactor, winSizeInPoints_.height *__ccContentScaleFactor);
 
 	[self setProjection:projection_];
@@ -409,7 +416,7 @@ GLToClipTransform(kmMat4 *transformOut)
 			// set size
 			winSizeInPixels_ = CGSizeMake(winSizeInPoints_.width * __ccContentScaleFactor, winSizeInPoints_.height *__ccContentScaleFactor);
 
-			if( __ccContentScaleFactor != 1 )
+			if( __ccContentScaleFactor/CC_CONTENT_SCALE_MULTIPLIER != 1 )
 				[self updateContentScaleFactor];
 
 			[view setTouchDelegate: touchDispatcher_];

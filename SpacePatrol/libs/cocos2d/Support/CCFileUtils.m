@@ -344,14 +344,14 @@ NSInteger ccLoadFileIntoMemory(const char *filename, unsigned char **out)
 	
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 	{
-		if( CC_CONTENT_SCALE_FACTOR() == 2 )
+		if( CC_CONTENT_SCALE_FACTOR() == 2*CC_CONTENT_SCALE_MULTIPLIER )
 			ret = kCCiPadRetinaDisplay;
 		else
 			ret = kCCiPad;
 	}
 	else
 	{
-		if( CC_CONTENT_SCALE_FACTOR() == 2 )
+		if( CC_CONTENT_SCALE_FACTOR() == 2*CC_CONTENT_SCALE_MULTIPLIER )
 			ret = kCCiPhoneRetinaDisplay;
 		else
 			ret = kCCiPhone;

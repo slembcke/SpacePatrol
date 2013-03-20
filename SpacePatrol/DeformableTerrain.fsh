@@ -52,6 +52,5 @@ void main()
 //	mix_color = smoothstep(0.5, 0.5*fwidth(mix_color) + 0.5, mix_color);
 	
 	// Composite the terrain and crust over the background for the final result!
-	gl_FragColor = vec4(1, 0, 0, 1);
 	gl_FragColor = mix(mix(bg_color, crust_color, mix_color.a), terrain_color, mix_color.r);
 }

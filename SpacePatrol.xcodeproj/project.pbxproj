@@ -149,6 +149,7 @@
 		D3DA233E165ACCD6006BE259 /* vec3.c in Sources */ = {isa = PBXBuildFile; fileRef = D3DA2331165ACCD6006BE259 /* vec3.c */; };
 		D3DA233F165ACCD6006BE259 /* vec4.c in Sources */ = {isa = PBXBuildFile; fileRef = D3DA2332165ACCD6006BE259 /* vec4.c */; };
 		D3DA2340165ACCFC006BE259 /* libCocos2D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3DA21BC165AC760006BE259 /* libCocos2D.a */; };
+		D3DFE99516FA457B00F30105 /* ButtonFlip.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3DFE99416FA457B00F30105 /* ButtonFlip.psd */; };
 		D3E5E4AE157851E40096C8B0 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */; };
 		D3F115F71582D52D00B4C7B7 /* ChassisOutline.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */; };
 		D3F1160D1583037700B4C7B7 /* Button.psd in Resources */ = {isa = PBXBuildFile; fileRef = D3F1160C1583037700B4C7B7 /* Button.psd */; };
@@ -514,6 +515,7 @@
 		D3DA2330165ACCD6006BE259 /* vec2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vec2.c; sourceTree = "<group>"; };
 		D3DA2331165ACCD6006BE259 /* vec3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vec3.c; sourceTree = "<group>"; };
 		D3DA2332165ACCD6006BE259 /* vec4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vec4.c; sourceTree = "<group>"; };
+		D3DFE99416FA457B00F30105 /* ButtonFlip.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = ButtonFlip.psd; sourceTree = "<group>"; };
 		D3E5E48815780CFA0096C8B0 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
 		D3E5E4AD157851E40096C8B0 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		D3F115F61582D52D00B4C7B7 /* ChassisOutline.psd */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChassisOutline.psd; path = Buggy/ChassisOutline.psd; sourceTree = "<group>"; };
@@ -559,6 +561,7 @@
 		D392E4D81579233A00D47867 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D3DFE99416FA457B00F30105 /* ButtonFlip.psd */,
 				D39C8CC716F3785900A9F5D7 /* Explosion.psd */,
 				D324472316EFB32E00A8B042 /* ButtonFire.psd */,
 				D324472416EFB32E00A8B042 /* Missile.psd */,
@@ -1152,6 +1155,7 @@
 				D324472516EFB32E00A8B042 /* ButtonFire.psd in Resources */,
 				D324472616EFB32E00A8B042 /* Missile.psd in Resources */,
 				D39C8CC816F3785900A9F5D7 /* Explosion.psd in Resources */,
+				D3DFE99516FA457B00F30105 /* ButtonFlip.psd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

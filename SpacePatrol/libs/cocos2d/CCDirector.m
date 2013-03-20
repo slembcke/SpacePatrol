@@ -313,7 +313,8 @@ static CCDirector *_sharedDirector = nil;
 		view_ = [view retain];
 
 		// set size
-		winSizeInPixels_ = winSizeInPoints_ = CCNSSizeToCGSize( [view_ bounds].size );
+		CGSize s = CCNSSizeToCGSize( [view_ bounds].size );
+		winSizeInPixels_ = winSizeInPoints_ = CGSizeMake(s.width/CC_CONTENT_SCALE_MULTIPLIER, s.height/CC_CONTENT_SCALE_MULTIPLIER);
 
 		[self createStatsLabel];
 		

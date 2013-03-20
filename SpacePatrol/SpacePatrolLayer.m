@@ -47,6 +47,7 @@
 	// The menu buttons for controlling the car.
 	CCMenuItemSprite *_goButton, *_stopButton;
 	CCMenuItemSprite *_fireButton;
+	CCMenuItemSprite *_flipButton;
 	
 	// The CCNode that we'll be adding the terrain and car to.
 	CCNode *_world;
@@ -159,6 +160,16 @@
 			[self addChild:menu z:Z_MENU];
 		}
 		
+		{
+			_flipButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFlip.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFlip.png"]];
+			_flipButton.selectedImage.color = ccc3(128, 128, 128);
+			_flipButton.position = ccp(50, 150);
+			
+			CCMenu *menu = [CCMenu menuWithItems:_flipButton, nil];
+			menu.position = CGPointZero;
+			[self addChild:menu z:Z_MENU];
+		}
+		
 		_missiles = [NSMutableArray array];
 		
 		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
@@ -216,7 +227,7 @@
 	
 	// Update the throttle values on the space buggy's motors.
 	int throttle = _goButton.isSelected - _stopButton.isSelected;
-	[_spaceBuggy update:fixed_dt throttle:throttle];
+	[_spaceBuggy update:fixed_dt throttle:throttle flip:_flipButton.isSelected];
 	
 	[_space step:fixed_dt];
 	_ticks++;

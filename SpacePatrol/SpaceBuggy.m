@@ -155,6 +155,9 @@ enum {
 	
 	// Motors for the brakes and main engine.
 	ChipmunkSimpleMotor *_motor, *_frontBrake, *_rearBrake;
+	ChipmunkSimpleMotor *_flip;
+	
+	int _idle;
 }
 
 @synthesize chipmunkObjects = _chipmunkObjects, node = _node;
@@ -246,12 +249,16 @@ enum {
 			_rearBrake = [ChipmunkSimpleMotor simpleMotorWithBodyA:chassis bodyB:rear rate:0.0];
 			_frontBrake.maxForce = _rearBrake.maxForce = ROLLING_FRICTION;
 			
+			_flip = [ChipmunkSimpleMotor simpleMotorWithBodyA:chassis bodyB:[ChipmunkBody staticBody] rate:2*M_PI];
+			_flip.maxForce = 0.0;
+			
 			// Whew! That's a lot of objects to list.
 			_chipmunkObjects = [NSArray arrayWithObjects:
 				_chassis, _frontWheel, _rearWheel,
 				_frontJoint, frontSpring, _frontBrake,
 				_rearJoint, rearSpring, _rearBrake,
 				rearStrutLimit, _motor, differential,
+				_flip,
 				nil
 			];
 		}
@@ -276,7 +283,7 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 	return cpvadd(anchor, cpvmult(n, dist));
 }
 
--(void)update:(ccTime)dt throttle:(int)throttle;
+-(void)update:(ccTime)dt throttle:(int)throttle flip:(bool)flip;
 {
 	if(throttle > 0){
 		// The motor is modeled like an electric motor where the torque decreases inversely as the rate approaches the maximum.
@@ -295,6 +302,8 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 		// Set the brakes to apply the baseline rolling friction torque.
 		_rearBrake.maxForce = _frontBrake.maxForce = ROLLING_FRICTION;
 	}
+	
+	_flip.maxForce = (flip ? 1e8 : 0.0);
 }
 
 -(void)sync
