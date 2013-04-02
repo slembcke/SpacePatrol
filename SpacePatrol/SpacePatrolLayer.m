@@ -70,6 +70,7 @@
 	
 	// The level configuration
 	SpacePatrolLevelManager *_levelManager;
+	BOOL _gameIsOver;
 
 	bool _zoom;
 	TrajectoryNode *_trajectory;
@@ -104,6 +105,7 @@
 
 		// init the level manager
 		_levelManager = [[SpacePatrolLevelManager alloc] initWithLevel:1];
+		_gameIsOver = NO;
 		
 		_terrain = [[DeformableTerrainSprite alloc] initWithFile:_levelManager.terrainSpriteName space:_space texelScale:32.0 tileSize:16];
 		[_world addChild:_terrain z:Z_TERRAIN];
@@ -353,11 +355,16 @@
 	// check whether our target area has been reached
 	[_debugNode drawDot:_levelManager.levelFinishVect radius:200 color:ccc4f(1, 0, 0, 1)];
 
-	if (cpvnear(buggyPos, _levelManager.levelFinishVect, 200.0f) )
+	if (cpvnear(buggyPos, _levelManager.levelFinishVect, 200.0f) && ! _gameIsOver )
 	{
+		_gameIsOver = YES;
 		// you win!
 		NSLog(@"You WIN!!!");
-		assert(false);
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You win!"
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:nil otherButtonTitles:@"Yay!", nil];
+		[alert show];
 	}
 }
 
@@ -443,6 +450,14 @@
 -(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	[self ccTouchesEnded:touches withEvent:event];
+}
+
+#pragma mark - alert view delegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	// right now the only alert is when you reach the target area
+	[[CCDirector sharedDirector] replaceScene:[[SpacePatrolLayer class] scene]];
 }
 
 @end
