@@ -28,8 +28,8 @@
 #import "DeformableTerrainSprite.h"
 #import "SpaceBuggy.h"
 #import "SatelliteBody.h"
-#import "MissileSprite.h"
-#import "TrajectoryNode.h"
+//#import "MissileSprite.h"
+//#import "TrajectoryNode.h"
 #import "SpacePatrolLevelManager.h"
 
 #define ENSURE_RANGE 1000.0f
@@ -72,8 +72,8 @@
 	SpacePatrolLevelManager *_levelManager;
 
 	bool _zoom;
-	TrajectoryNode *_trajectory;
-	NSMutableArray *_missiles;
+//	TrajectoryNode *_trajectory;
+//	NSMutableArray *_missiles;
 	
 	int _ticks;
 }
@@ -96,7 +96,7 @@
 		
 		_space = [[ChipmunkSpace alloc] init];
 //		_space.gravity = cpv(0.0f, -GRAVITY);
-		[_space addCollisionHandler:self typeA:PhysicsIdentifier(MISSILE) typeB:PhysicsIdentifier(TERRAIN) begin:@selector(missileGroundBegin:space:) preSolve:nil postSolve:nil separate:nil];
+//		[_space addCollisionHandler:self typeA:PhysicsIdentifier(MISSILE) typeB:PhysicsIdentifier(TERRAIN) begin:@selector(missileGroundBegin:space:) preSolve:nil postSolve:nil separate:nil];
 		
 		_multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:_space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
 		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
@@ -175,10 +175,10 @@
 			[self addChild:menu z:Z_MENU];
 		}
 		
-		_missiles = [NSMutableArray array];
-		
-		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
-		[_world addChild:_trajectory z:Z_TRAJECTORY];
+//		_missiles = [NSMutableArray array];
+//		
+//		_trajectory = [[TrajectoryNode alloc] initWithSpace:_space];
+//		[_world addChild:_trajectory z:Z_TRAJECTORY];
 		
 		self.touchEnabled = TRUE;
 	}
@@ -215,9 +215,9 @@
 // This method is called 240 times per second.
 -(void)tick:(ccTime)fixed_dt
 {
-	if(_fireButton.isSelected && _ticks%20 == 0){
-		[self fire];
-	}
+//	if(_fireButton.isSelected && _ticks%20 == 0){
+//		[self fire];
+//	}
 	
 	// Only terrain geometry that exists inside this "ensure" rect is guaranteed to exist.
 	// This keeps the memory and CPU usage very low for the terrain by allowing it to focus only on the important areas.
@@ -341,14 +341,14 @@
 	float targetScale = (_zoom ? 1.0/8.0 : 1.0);
 	_world.scale = _world.scale*pow(targetScale/_world.scale, 1.0 - pow(0.1, dt/0.25));
 	
-	[_trajectory setPos:self.muzzlePos muzzleVelocity:self.muzzleVel];
+//	[_trajectory setPos:self.muzzlePos muzzleVelocity:self.muzzleVel];
 	
-	for(MissileSprite *missile in [_missiles copy]){
-		// Destroy the missiles when they get too far away.
-		if(cpvdist(buggyPos, missile.body.pos) > ENSURE_RANGE){
-			[self destructMissile:missile];
-		}
-	}
+//	for(MissileSprite *missile in [_missiles copy]){
+//		// Destroy the missiles when they get too far away.
+//		if(cpvdist(buggyPos, missile.body.pos) > ENSURE_RANGE){
+//			[self destructMissile:missile];
+//		}
+//	}
 
 	// check whether our target area has been reached
 	[_debugNode drawDot:_levelManager.levelFinishVect radius:200 color:ccc4f(1, 0, 0, 1)];
@@ -361,49 +361,49 @@
 	}
 }
 
--(void)fire
-{
-	MissileSprite *missile = [[MissileSprite alloc] initAtPos:self.muzzlePos vel:self.muzzleVel];
-	[_space add:missile];
-	[_world addChild:missile];
-	[_missiles addObject:missile];
-	
-	ChipmunkBody *buggy = _spaceBuggy.body;
-	ChipmunkBody *mbody = missile.body;
-	[buggy applyImpulse:cpvmult(mbody.vel, -mbody.mass) offset:cpvsub(self.muzzlePos, buggy.pos)];
-}
-
--(void)destructMissile:(MissileSprite *)missile
-{
-	CCSprite *explosion = [CCSprite spriteWithFile:@"Explosion.png"];
-	explosion.position = missile.position;
-	explosion.zOrder = Z_EFFECTS;
-	[_world addChild:explosion];
-	
-	ccTime duration = 0.15;
-	[explosion runAction:[CCFadeOut actionWithDuration:duration]];
-	[explosion runAction:[CCSequence actions:
-		[CCScaleTo actionWithDuration:duration scale:0.5],
-		[CCCallBlock actionWithBlock:^{[explosion removeFromParentAndCleanup:TRUE];}],
-		nil
-	]];
-	
-	[_terrain modifyTerrainAt:missile.body.pos radius:300.0 remove:TRUE];
-	
-	[_world removeChild:missile cleanup:TRUE];
-	[_space remove:missile];
-	[_missiles removeObject:missile];
-}
-
--(bool)missileGroundBegin:(cpArbiter *)arbiter space:(ChipmunkSpace*)space
-{
-	CHIPMUNK_ARBITER_GET_BODIES(arbiter, missileBody, groundBody);
-	MissileSprite *missile = missileBody.data;
-	
-	[space addPostStepBlock:^{[self destructMissile:missile];} key:missile];
-	
-	return FALSE;
-}
+//-(void)fire
+//{
+//	MissileSprite *missile = [[MissileSprite alloc] initAtPos:self.muzzlePos vel:self.muzzleVel];
+//	[_space add:missile];
+//	[_world addChild:missile];
+//	[_missiles addObject:missile];
+//	
+//	ChipmunkBody *buggy = _spaceBuggy.body;
+//	ChipmunkBody *mbody = missile.body;
+//	[buggy applyImpulse:cpvmult(mbody.vel, -mbody.mass) offset:cpvsub(self.muzzlePos, buggy.pos)];
+//}
+//
+//-(void)destructMissile:(MissileSprite *)missile
+//{
+//	CCSprite *explosion = [CCSprite spriteWithFile:@"Explosion.png"];
+//	explosion.position = missile.position;
+//	explosion.zOrder = Z_EFFECTS;
+//	[_world addChild:explosion];
+//	
+//	ccTime duration = 0.15;
+//	[explosion runAction:[CCFadeOut actionWithDuration:duration]];
+//	[explosion runAction:[CCSequence actions:
+//		[CCScaleTo actionWithDuration:duration scale:0.5],
+//		[CCCallBlock actionWithBlock:^{[explosion removeFromParentAndCleanup:TRUE];}],
+//		nil
+//	]];
+//	
+//	[_terrain modifyTerrainAt:missile.body.pos radius:300.0 remove:TRUE];
+//	
+//	[_world removeChild:missile cleanup:TRUE];
+//	[_space remove:missile];
+//	[_missiles removeObject:missile];
+//}
+//
+//-(bool)missileGroundBegin:(cpArbiter *)arbiter space:(ChipmunkSpace*)space
+//{
+//	CHIPMUNK_ARBITER_GET_BODIES(arbiter, missileBody, groundBody);
+//	MissileSprite *missile = missileBody.data;
+//	
+//	[space addPostStepBlock:^{[self destructMissile:missile];} key:missile];
+//	
+//	return FALSE;
+//}
 
 -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
