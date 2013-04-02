@@ -75,7 +75,7 @@ typedef struct Vertex {
 		// Give the sampler a dense border.
 		// This means that when reading outside of the image bounds will be solid,
 		// causing it to put an edge around the world for us.
-		[_sampler setBorderValue:1.0];
+		[_sampler setBorderValue:0.0];
 		
 		// Set the CGContext's drawing coordinates to match our Chipmunk/Cocos2D coordinates.
 		CGContextConcatCTM(_sampler.context, CGAffineTransformMake(1.0/_texelScale, 0.0, 0.0, 1.0/_texelScale, 0.0, 0.0));
