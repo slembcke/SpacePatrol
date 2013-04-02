@@ -158,6 +158,7 @@ enum {
 	ChipmunkSimpleMotor *_flip;
 	
 	int _idle;
+	ChipmunkSpace *_space;
 }
 
 @synthesize chipmunkObjects = _chipmunkObjects, node = _node;
@@ -168,10 +169,11 @@ enum {
 	return cpvtoangle(cpvsub([_chassis.body local2world:_rearJoint.anchr1], _rearWheel.body.pos));
 }
 
--(id)initWithPosition:(cpVect)pos
+-(id)initWithPosition:(cpVect)pos space:(ChipmunkSpace *)space;
 {
 	if((self = [super init])){
 		_node = [CCNode node];
+		_space = space;
 		
 		_chassis = [[SpaceBuggyChassis alloc] init];
 		_chassis.body.pos = cpvadd(pos, COG_ADJUSTMENT);
@@ -304,6 +306,28 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 	}
 	
 	_flip.maxForce = (flip ? 1e8 : 0.0);
+	
+	[_frontWheel.body resetForces];
+	[_rearWheel.body resetForces];
+	
+	const cpFloat attractDist = 200.0;
+	const cpFloat attractForce = 3e3;
+	
+	cpVect rot = _chassis.body.rot;
+	cpVect direction = cpvrotate(cpv(0.0, -attractDist), rot);
+	cpVect force = cpvrotate(cpv(0, -attractForce), rot);
+	cpVect front = _frontWheel.body.pos;
+	cpVect rear = _rearWheel.body.pos;
+	
+	{
+		ChipmunkSegmentQueryInfo *info = [_space segmentQueryFirstFrom:front to:cpvadd(front, direction) layers:CP_ALL_LAYERS group:PhysicsIdentifier(BUGGY)];
+		[_frontWheel.body applyForce:cpvmult(force, 1.0 - info.dist/attractDist) offset:cpvzero];
+	}
+	
+	{
+		ChipmunkSegmentQueryInfo *info = [_space segmentQueryFirstFrom:rear to:cpvadd(rear, direction) layers:CP_ALL_LAYERS group:PhysicsIdentifier(BUGGY)];
+		[_rearWheel.body applyForce:cpvmult(force, 1.0 - info.dist/attractDist) offset:cpvzero];
+	}
 }
 
 -(void)sync

@@ -109,7 +109,7 @@
 			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
-			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 60))];
+			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 60)) space:_space];
 			[_world addChild:_spaceBuggy.node z:Z_BUGGY];
 			[_space add:_spaceBuggy];
 		}
@@ -117,7 +117,7 @@
 		// Add a ChipmunkDebugNode to draw the space.
 		_debugNode = [CCPhysicsDebugNode debugNodeForChipmunkSpace:_space];
 		[_world addChild:_debugNode z:Z_DEBUG];
-		_debugNode.visible = FALSE;
+		_debugNode.visible = TRUE;
 		
 		{
 			// Show some menu buttons.
@@ -387,7 +387,7 @@
 	for(UITouch *touch in touches){
 		cpVect location = [self touchLocation:touch];
 //		NSLog(@"sample%@: %f", NSStringFromCGPoint(location), [_terrain.sampler sample:location]);
-		[_multiGrab beginLocation:location];
+//		[_multiGrab beginLocation:location];
 		
 		if(!_currentDeformTouch){
 			_currentDeformTouch = touch;
@@ -402,14 +402,14 @@
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		[_multiGrab updateLocation:[_terrain convertTouchToNodeSpace:touch]];
+//		[_multiGrab updateLocation:[_terrain convertTouchToNodeSpace:touch]];
 	}
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	for(UITouch *touch in touches){
-		[_multiGrab endLocation:[_terrain convertTouchToNodeSpace:touch]];
+//		[_multiGrab endLocation:[_terrain convertTouchToNodeSpace:touch]];
 		
 		if(touch == _currentDeformTouch){
 			_currentDeformTouch = nil;

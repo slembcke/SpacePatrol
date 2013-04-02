@@ -39,7 +39,7 @@
 // The parent node for the buggy's sprites.
 @property(nonatomic, retain) CCNode *node;
 
--(id)initWithPosition:(cpVect)pos;
+-(id)initWithPosition:(cpVect)pos space:(ChipmunkSpace *)space;
 
 // Update the motors attached to the buggy.
 -(void)update:(ccTime)dt throttle:(int)throttle flip:(bool)flip;
