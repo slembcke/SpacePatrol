@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		85A86F84170B6513009DEF4B /* SpacePatrolLevelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85A86F83170B6513009DEF4B /* SpacePatrolLevelManager.m */; };
 		D312F1D41583D4E300E9E47F /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1CD1583D4E300E9E47F /* Default-Landscape~ipad.png */; };
 		D312F1D61583D4E300E9E47F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1CF1583D4E300E9E47F /* Default@2x.png */; };
 		D312F1D71583D4E300E9E47F /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = D312F1D01583D4E300E9E47F /* Icon.png */; };
@@ -196,6 +197,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		85A86F82170B6513009DEF4B /* SpacePatrolLevelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacePatrolLevelManager.h; sourceTree = "<group>"; };
+		85A86F83170B6513009DEF4B /* SpacePatrolLevelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpacePatrolLevelManager.m; sourceTree = "<group>"; };
 		D312F1CD1583D4E300E9E47F /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape~ipad.png"; path = "Resources/Default-Landscape~ipad.png"; sourceTree = "<group>"; };
 		D312F1CE1583D4E300E9E47F /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Resources/Default.png; sourceTree = "<group>"; };
 		D312F1CF1583D4E300E9E47F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "Resources/Default@2x.png"; sourceTree = "<group>"; };
@@ -630,6 +633,8 @@
 				D3E5E48815780CFA0096C8B0 /* Physics.h */,
 				D33F53B0157FB95A00DD9246 /* SpacePatrolLayer.h */,
 				D33F53B1157FB95A00DD9246 /* SpacePatrolLayer.m */,
+				85A86F82170B6513009DEF4B /* SpacePatrolLevelManager.h */,
+				85A86F83170B6513009DEF4B /* SpacePatrolLevelManager.m */,
 				D3F8E00F157EAD8700457513 /* DeformableTerrainSprite.h */,
 				D3F8E010157EAD8700457513 /* DeformableTerrainSprite.m */,
 				D38FE0E7157EDF4F00E47812 /* DeformableTerrain.vsh */,
@@ -1174,6 +1179,7 @@
 				D324472116EF8DBC00A8B042 /* SatelliteBody.m in Sources */,
 				D324472B16EFC17B00A8B042 /* MissileSprite.m in Sources */,
 				D324472E16EFC1B200A8B042 /* TrajectoryNode.m in Sources */,
+				85A86F84170B6513009DEF4B /* SpacePatrolLevelManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
