@@ -30,6 +30,7 @@
 #import "SatelliteBody.h"
 #import "MissileSprite.h"
 #import "TrajectoryNode.h"
+#import "SpacePatrolLevelManager.h"
 
 #define ENSURE_RANGE 1000.0f
 
@@ -67,6 +68,9 @@
 	// Timer values for implementing a fixed timestep for the physics.
 	ccTime _accumulator, _fixedTime;
 	
+	// The level configuration
+	SpacePatrolLevelManager *_levelManager;
+
 	bool _zoom;
 	TrajectoryNode *_trajectory;
 	NSMutableArray *_missiles;
@@ -97,23 +101,24 @@
 		_multiGrab = [[ChipmunkMultiGrab alloc] initForSpace:_space withSmoothing:cpfpow(0.8, 60) withGrabForce:1e4];
 		// Set a grab radius so that you don't have to touch a shape *exactly* in order to pick it up.
 		_multiGrab.grabRadius = 50.0;
+
+		// init the level manager
+		_levelManager = [[SpacePatrolLevelManager alloc] initWithLevel:1];
 		
-		_terrain = [[DeformableTerrainSprite alloc] initWithFile:@"Terrain.png" space:_space texelScale:32.0 tileSize:16];
+		_terrain = [[DeformableTerrainSprite alloc] initWithFile:_levelManager.terrainSpriteName space:_space texelScale:32.0 tileSize:16];
 		[_world addChild:_terrain z:Z_TERRAIN];
 		
 		{
 			// We need to find the terrain's ground level so we can drop the buggy at the surface.
 			// You can't use a raycast because there is no geometry in space until the tile cache adds it.
 			// Instead, we'll sample upwards along the terrain's density to find somewhere where the density is low (where there isn't dirt).
-			cpVect pos = GRAVITY_ORIGIN;
-			while([_terrain.sampler sample:pos] > 0.5) pos.y += 1.0;
 			
 			// Add the car just above that level.
-			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(pos, cpv(0, 60)) space:_space];
+			_spaceBuggy = [[SpaceBuggy alloc] initWithPosition:cpvadd(_levelManager.player1StartVect, cpv(0, 60)) space:_space];
 			[_world addChild:_spaceBuggy.node z:Z_BUGGY];
 			[_space add:_spaceBuggy];
 		}
-		
+
 		// Add a ChipmunkDebugNode to draw the space.
 		_debugNode = [CCPhysicsDebugNode debugNodeForChipmunkSpace:_space];
 		[_world addChild:_debugNode z:Z_DEBUG];
@@ -343,6 +348,16 @@
 		if(cpvdist(buggyPos, missile.body.pos) > ENSURE_RANGE){
 			[self destructMissile:missile];
 		}
+	}
+
+	// check whether our target area has been reached
+	[_debugNode drawDot:_levelManager.levelFinishVect radius:200 color:ccc4f(1, 0, 0, 1)];
+
+	if (cpvnear(buggyPos, _levelManager.levelFinishVect, 200.0f) )
+	{
+		// you win!
+		NSLog(@"You WIN!!!");
+		assert(false);
 	}
 }
 
