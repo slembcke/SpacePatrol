@@ -59,7 +59,7 @@
 
 #define ROLLING_FRICTION 5e2
 
-#define ENGINE_MAX_TORQUE 6.0e4
+#define ENGINE_MAX_TORQUE 12.0e4
 #define ENGINE_MAX_W 60
 #define BRAKING_TORQUE 3.0e4
 

@@ -272,10 +272,11 @@
 	
 	if(
 		// Skip deforming the terrain if it's very near to the last place the terrain was deformed.
-		ccpDistanceSQ(location, _lastDeformLocation) > threshold*threshold &&
+		!cpvnear(location, _lastDeformLocation, threshold) &&
 		// Skip filling in dirt if it's too near to the car.
 		// If you filled in over the car it would fall through the terrain segments.
-		(_currentDeformTouchRemoves || ![_space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape)
+		(_currentDeformTouchRemoves || ![_space nearestPointQueryNearest:location maxDistance:0.75*radius layers:COLLISION_RULE_BUGGY_ONLY group:nil].shape) &&
+		(_currentDeformTouchRemoves || cpvnear(location, GRAVITY_ORIGIN, PLANET_RADIUS))
 	){
 		[_terrain modifyTerrainAt:location radius:radius remove:_currentDeformTouchRemoves];
 		_lastDeformLocation = location;

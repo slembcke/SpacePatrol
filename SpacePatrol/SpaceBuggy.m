@@ -310,7 +310,7 @@ ProjectFromPoint(cpVect p, cpVect anchor, cpFloat dist)
 	[_frontWheel.body resetForces];
 	[_rearWheel.body resetForces];
 	
-	const cpFloat attractDist = 300.0;
+	const cpFloat attractDist = 250.0;
 	const cpFloat attractForce = 2e3;
 	
 	cpVect rot = _chassis.body.rot;
