@@ -142,35 +142,35 @@
 			[self addChild:menu z:Z_MENU];
 		}
 		
-		{
-			_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-			_goButton.selectedImage.color = ccc3(128, 128, 128);
-			_goButton.position = ccp(480 - 50, 50);
-			
-			_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
-			_stopButton.selectedImage.color = ccc3(128, 128, 128);
-			_stopButton.scaleX = -1.0;
-			_stopButton.position = ccp(50, 50);
-			
-			CCMenu *menu = [CCMenu menuWithItems:_goButton, _stopButton, nil];
-			menu.position = CGPointZero;
-			[self addChild:menu z:Z_MENU];
-		}
-		
-		{
-			_fireButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFire.png"]];
-			_fireButton.selectedImage.color = ccc3(128, 128, 128);
-			_fireButton.position = ccp(480 - 50, 150);
-			
-			CCMenu *menu = [CCMenu menuWithItems:_fireButton, nil];
-			menu.position = CGPointZero;
-			[self addChild:menu z:Z_MENU];
-		}
+//		{
+//			_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+//			_goButton.selectedImage.color = ccc3(128, 128, 128);
+//			_goButton.position = ccp(480 - 50, 50);
+//			
+//			_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
+//			_stopButton.selectedImage.color = ccc3(128, 128, 128);
+//			_stopButton.scaleX = -1.0;
+//			_stopButton.position = ccp(50, 50);
+//			
+//			CCMenu *menu = [CCMenu menuWithItems:_goButton, _stopButton, nil];
+//			menu.position = CGPointZero;
+//			[self addChild:menu z:Z_MENU];
+//		}
+//		
+//		{
+//			_fireButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFire.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFire.png"]];
+//			_fireButton.selectedImage.color = ccc3(128, 128, 128);
+//			_fireButton.position = ccp(480 - 50, 150);
+//			
+//			CCMenu *menu = [CCMenu menuWithItems:_fireButton, nil];
+//			menu.position = CGPointZero;
+//			[self addChild:menu z:Z_MENU];
+//		}
 		
 		{
 			_flipButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"ButtonFlip.png"] selectedSprite:[CCSprite spriteWithFile:@"ButtonFlip.png"]];
 			_flipButton.selectedImage.color = ccc3(128, 128, 128);
-			_flipButton.position = ccp(50, 150);
+			_flipButton.position = ccp(50, 50);
 			
 			CCMenu *menu = [CCMenu menuWithItems:_flipButton, nil];
 			menu.position = CGPointZero;
