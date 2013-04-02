@@ -117,7 +117,7 @@
 		// Add a ChipmunkDebugNode to draw the space.
 		_debugNode = [CCPhysicsDebugNode debugNodeForChipmunkSpace:_space];
 		[_world addChild:_debugNode z:Z_DEBUG];
-		_debugNode.visible = TRUE;
+		_debugNode.visible = FALSE;
 		
 		{
 			// Show some menu buttons.
@@ -227,7 +227,14 @@
 	// It would fall right through terrain that never had collision geometry generated for it.
 	
 	// Update the throttle values on the space buggy's motors.
-	int throttle = _goButton.isSelected - _stopButton.isSelected;
+//	int throttle = _goButton.isSelected - _stopButton.isSelected;
+	int throttle = 0;
+	if(_currentDeformTouch){
+		CGPoint location = [self touchLocation:_currentDeformTouch];
+		cpFloat dir = cpvdot(_spaceBuggy.body.rot, cpvsub(location, _spaceBuggy.body.pos));
+		throttle = (dir > 0.0 ? 1 : -1);
+	}
+	
 	[_spaceBuggy update:fixed_dt throttle:throttle flip:_flipButton.isSelected];
 	
 	[_space step:fixed_dt];
@@ -256,7 +263,7 @@
 {
 	if(!_currentDeformTouch) return;
 	
-	CGFloat radius = (_zoom ? 4.0 : 1.0)*100.0;
+	CGFloat radius = (_zoom ? 1.0 : 1.0)*100.0;
 	CGFloat threshold = 0.025*radius;
 	
 	// UITouch objects are persistent and continue to be updated for as long as the touch is occuring.
