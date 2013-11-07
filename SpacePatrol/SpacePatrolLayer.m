@@ -134,19 +134,22 @@
 			reset.position = ccp(50, 300);
 			
 			// TODO Memory leak.
-			CCMenuItemLabel *zoom = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Zoom" fontName:@"Helvetica" fontSize:20] target:self selector:@selector(toggleZoom)];
-			zoom.position = ccp(400, 300);
+//			CCMenuItemLabel *zoom = [CCMenuItemLabel itemWithLabel:[CCLabelTTF labelWithString:@"Zoom" fontName:@"Helvetica" fontSize:20] target:self selector:@selector(toggleZoom)];
+//			zoom.position = ccp(400, 300);
+			_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"] target:self selector:@selector(toggleZoom)];
+			_goButton.selectedImage.color = ccc3(128, 128, 128);
+			_goButton.position = ccp(400, 300);
 			
-			CCMenu *menu = [CCMenu menuWithItems:reset, zoom, nil];
+			CCMenu *menu = [CCMenu menuWithItems:reset, _goButton, nil];
 			menu.position = CGPointZero;
 			[self addChild:menu z:Z_MENU];
 		}
-		
+
 //		{
 //			_goButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
 //			_goButton.selectedImage.color = ccc3(128, 128, 128);
 //			_goButton.position = ccp(480 - 50, 50);
-//			
+//
 //			_stopButton = [CCMenuItemSprite itemWithNormalSprite:[CCSprite spriteWithFile:@"Button.png"] selectedSprite:[CCSprite spriteWithFile:@"Button.png"]];
 //			_stopButton.selectedImage.color = ccc3(128, 128, 128);
 //			_stopButton.scaleX = -1.0;
@@ -353,18 +356,62 @@
 	}
 
 	// check whether our target area has been reached
-	[_debugNode drawDot:_levelManager.levelFinishVect radius:200 color:ccc4f(1, 0, 0, 1)];
+//	[_debugNode drawDot:_levelManager.levelFinishVect radius:200 color:ccc4f(1, 0, 0, 1)];
 
-	if (cpvnear(buggyPos, _levelManager.levelFinishVect, 200.0f) && ! _gameIsOver )
+
+	if (_gameIsOver) {
+		return;
+	}
+	else if ( ! _levelManager.hasReachedObjective1)
 	{
-		_gameIsOver = YES;
-		// you win!
-		NSLog(@"You WIN!!!");
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You win!"
-														message:nil
-													   delegate:self
-											  cancelButtonTitle:nil otherButtonTitles:@"Yay!", nil];
-		[alert show];
+		// update the next target arrow
+		cpVect target = cpvsub(_levelManager.objective1Vect, buggyPos);
+		float degs = CC_RADIANS_TO_DEGREES(cpvtoangle(target));
+		_goButton.rotation = -degs;
+		if (cpvnear(buggyPos, _levelManager.objective1Vect, 200.0f)) {
+			// we've reached objective 1
+			_levelManager.hasReachedObjective1 = YES;
+		}
+	}
+	else if ( ! _levelManager.hasReachedObjective2)
+	{
+		// update the next target arrow
+		cpVect target = cpvsub(_levelManager.objective2Vect, buggyPos);
+		float degs = CC_RADIANS_TO_DEGREES(cpvtoangle(target));
+		_goButton.rotation = -degs;
+		if (cpvnear(buggyPos, _levelManager.objective2Vect, 200.0f)) {
+			// we've reached objective 2
+			_levelManager.hasReachedObjective2 = YES;
+		}
+	}
+	else if ( ! _levelManager.hasReachedObjective3)
+	{
+		// update the next target arrow
+		cpVect target = cpvsub(_levelManager.objective3Vect, buggyPos);
+		float degs = CC_RADIANS_TO_DEGREES(cpvtoangle(target));
+		_goButton.rotation = -degs;
+		if (cpvnear(buggyPos, _levelManager.objective3Vect, 200.0f)) {
+			// we've reached objective
+			_levelManager.hasReachedObjective3 = YES;
+		}
+	}
+	else
+	{
+		// update the next target arrow
+		cpVect target = cpvsub(_levelManager.levelFinishVect, buggyPos);
+		float degs = CC_RADIANS_TO_DEGREES(cpvtoangle(target));
+		_goButton.rotation = -degs;
+		if (cpvnear(buggyPos, _levelManager.levelFinishVect, 200.0f))
+		{
+			_gameIsOver = YES;
+			// you win!
+			NSLog(@"You WIN!!!");
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You win!"
+															message:nil
+														   delegate:self
+												  cancelButtonTitle:nil otherButtonTitles:@"Yay!", nil];
+			[alert show];
+		}
 	}
 }
 
