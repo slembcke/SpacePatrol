@@ -12,11 +12,11 @@ You may additionally need to run @git checkout .@ to cleanup the deleted files. 
 
 To read more about why this project moved, you can read about it in "PROJECT_HAS_MOVED.md":PROJECT_HAS_MOVED.md
 
+h1. Space Patrol
+
 p=. !http://files.slembcke.net/upshot/upshot_SpacePatrol.png!
 
 "YouTube Video":http://www.youtube.com/watch?v=rb49mke8K2k
-
-h1. Space Patrol
 
 You are a Super Space Ranger with an awesome space buggy. Fortunately you've landed on a really sweet planet with deformable terrain (Wait... what?). You can catch some sweet air or dig around through the ground. You can do whatever you want because you are a Super Space Ranger. Who could stop you anyway?
 
