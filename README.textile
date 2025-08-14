@@ -1,3 +1,17 @@
+h2. This Project has Moved!
+
+You can find the new project page on the "Chipmunk2D Website":https://chipmunk-physics.net/git/SpacePatrol.html.
+
+To migrate an existing checkout, you can use the following command, or make a new checkout of the project from the new location.
+
+bc. git remote set-url origin https://chipmunk-physics.net/git/SpacePatrol
+git fetch origin master
+git reset origin/master
+
+You may additionally need to run @git checkout .@ to cleanup the deleted files. *This will also discard your local changes if you have made any.*
+
+To read more about why this project moved, you can read about it in "PROJECT_HAS_MOVED.md":PROJECT_HAS_MOVED.md
+
 p=. !http://files.slembcke.net/upshot/upshot_SpacePatrol.png!
 
 "YouTube Video":http://www.youtube.com/watch?v=rb49mke8K2k
